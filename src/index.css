@@ -47,3 +47,24 @@ body {
 .rdp-root {
   --rdp-accent-color: #3b82f6;
 }
+
+@media (max-width: 639px) {
+  .text-\[10px\] {
+    font-size: 12px;
+  }
+  .text-\[11px\] {
+    font-size: 13px;
+  }
+  .text-xs {
+    font-size: 14px;
+  }
+  .text-sm {
+    font-size: 16px;
+  }
+  .text-base {
+    font-size: 18px;
+  }
+  .text-lg {
+    font-size: 20px;
+  }
+}
