@@ -215,10 +215,10 @@ function App() {
         </div>
       )}
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 flex-col md:flex-row">
         <Sidebar filter={filter} onFilterChange={setFilter} onManageCategories={() => setShowCategoryModal(true)} />
 
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 sm:p-6">
           <TaskGrid tasks={filteredTasks} onEditTask={handleEditTask} />
         </main>
       </div>

@@ -19,15 +19,15 @@ export function Header({ onNewTask, profile, onOpenProfile }: HeaderProps) {
   const firstName = profile?.name?.trim().split(/\s+/)[0];
 
   return (
-    <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4 dark:border-slate-800 dark:bg-[#16171d]">
+    <header className="flex flex-col gap-3 border-b border-slate-200 bg-white px-4 py-4 dark:border-slate-800 dark:bg-[#16171d] sm:flex-row sm:items-center sm:justify-between sm:px-6">
       <div>
         <h1 className="text-lg font-semibold">{t.headerTitle}</h1>
         <p className="text-xs text-slate-400">{t.headerSubtitle}</p>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {firstName && (
-          <span className="mr-1 hidden text-base font-semibold text-slate-700 dark:text-slate-200 sm:inline">
+          <span className="mr-1 text-base font-semibold text-slate-700 dark:text-slate-200">
             {t.headerGreeting(firstName)}
           </span>
         )}
