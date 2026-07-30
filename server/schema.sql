@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS categories (
   user_id CHAR(36) NOT NULL,
   name VARCHAR(255) NOT NULL,
   color VARCHAR(20) NOT NULL,
+  position INT NOT NULL DEFAULT 0,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -32,6 +33,8 @@ CREATE TABLE IF NOT EXISTS tasks (
   category_ids JSON NOT NULL,
   client_id CHAR(36),
   due_date DATE NOT NULL,
+  due_time VARCHAR(5),
+  due_time_label VARCHAR(255),
   recurrence VARCHAR(20) NOT NULL DEFAULT 'none',
   completed BOOLEAN NOT NULL DEFAULT FALSE,
   pinned BOOLEAN NOT NULL DEFAULT FALSE,

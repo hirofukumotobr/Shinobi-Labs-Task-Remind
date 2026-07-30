@@ -93,8 +93,14 @@ export function TaskCard({ task, categories, client, onEdit }: TaskCardProps) {
       </div>
 
       <div className="mt-auto flex items-center justify-between pt-2">
-        <div className={`text-sm font-medium ${urgencyTextStyles[urgency]}`}>
-          {formatDueDate(task.dueDate, lang)} · {formatRelativeDays(task.dueDate, task.completed, t)}
+        <div>
+          <div className={`text-sm font-medium ${urgencyTextStyles[urgency]}`}>
+            {formatDueDate(task.dueDate, lang)} ·{' '}
+            {formatRelativeDays(task.dueDate, task.completed, t, task.dueTime)}
+          </div>
+          {task.dueTimeLabel && !task.completed && (
+            <p className="text-xs text-slate-400">{task.dueTimeLabel}</p>
+          )}
         </div>
         <div className="flex items-center gap-1">
           <button

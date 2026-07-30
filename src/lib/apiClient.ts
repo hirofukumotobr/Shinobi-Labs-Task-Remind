@@ -87,7 +87,7 @@ export const api = {
 
   createCategory: (category: Category) =>
     request('/categories', { method: 'POST', body: JSON.stringify(category) }),
-  updateCategory: (id: string, changes: Partial<Pick<Category, 'name' | 'color'>>) =>
+  updateCategory: (id: string, changes: Partial<Pick<Category, 'name' | 'color'>> & { position?: number }) =>
     request(`/categories/${id}`, { method: 'PUT', body: JSON.stringify(changes) }),
   deleteCategory: (id: string) => request(`/categories/${id}`, { method: 'DELETE' }),
 

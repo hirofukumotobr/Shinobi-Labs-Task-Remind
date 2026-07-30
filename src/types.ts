@@ -25,6 +25,8 @@ export interface Task {
   categoryIds: string[];
   clientId: string | null;
   dueDate: string;
+  dueTime?: string;
+  dueTimeLabel?: string;
   recurrence: Recurrence;
   completed: boolean;
   pinned: boolean;

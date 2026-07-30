@@ -51,13 +51,23 @@ export function formatDueDate(dueDate: string, lang: Lang): string {
   return format(date, pattern, { locale: getDateFnsLocale(lang) });
 }
 
-export function formatRelativeDays(dueDate: string, completed: boolean, t: Translations): string {
+export function formatRelativeDays(
+  dueDate: string,
+  completed: boolean,
+  t: Translations,
+  dueTime?: string,
+): string {
   if (completed) return t.taskDateCompleted;
   const diff = differenceInCalendarDays(parseDueDate(dueDate), new Date());
-  if (diff < 0) return t.taskDateOverdue(Math.abs(diff));
-  if (diff === 0) return t.taskDateDueToday;
-  if (diff === 1) return t.taskDateDueTomorrow;
-  return t.taskDateDueInDays(diff);
+  const base =
+    diff < 0
+      ? t.taskDateOverdue(Math.abs(diff))
+      : diff === 0
+        ? t.taskDateDueToday
+        : diff === 1
+          ? t.taskDateDueTomorrow
+          : t.taskDateDueInDays(diff);
+  return dueTime ? `${base} ${t.taskDateAtTime(dueTime)}` : base;
 }
 
 export function getRecurrenceLabel(recurrence: Recurrence, t: Translations): string {

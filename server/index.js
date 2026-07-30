@@ -34,6 +34,8 @@ function mapTaskRow(row) {
     categoryIds: typeof row.category_ids === 'string' ? JSON.parse(row.category_ids) : row.category_ids,
     clientId: row.client_id,
     dueDate: row.due_date,
+    dueTime: row.due_time ?? undefined,
+    dueTimeLabel: row.due_time_label ?? undefined,
     recurrence: row.recurrence,
     completed: !!row.completed,
     pinned: !!row.pinned,
@@ -174,7 +176,10 @@ app.get(
   requireAuth,
   asyncHandler(async (req, res) => {
     const { userId } = req;
-    const [categories] = await pool.query('SELECT * FROM categories WHERE user_id = ?', [userId]);
+    const [categories] = await pool.query(
+      'SELECT * FROM categories WHERE user_id = ? ORDER BY position ASC, created_at ASC',
+      [userId],
+    );
     const [clients] = await pool.query('SELECT * FROM clients WHERE user_id = ?', [userId]);
     const [tasks] = await pool.query('SELECT * FROM tasks WHERE user_id = ?', [userId]);
 
@@ -195,12 +200,11 @@ app.post(
     const { id: clientProvidedId, name, color } = req.body || {};
     if (!name || !color) return res.status(400).json({ error: 'invalid_input' });
     const id = clientProvidedId || crypto.randomUUID();
-    await pool.query('INSERT INTO categories (id, user_id, name, color) VALUES (?, ?, ?, ?)', [
-      id,
-      req.userId,
-      name,
-      color,
-    ]);
+    await pool.query(
+      `INSERT INTO categories (id, user_id, name, color, position)
+       VALUES (?, ?, ?, ?, (SELECT COALESCE(MAX(position), -1) + 1 FROM categories WHERE user_id = ?))`,
+      [id, req.userId, name, color, req.userId],
+    );
     res.json({ id, name, color });
   }),
 );
@@ -209,10 +213,10 @@ app.put(
   '/categories/:id',
   requireAuth,
   asyncHandler(async (req, res) => {
-    const { name, color } = req.body || {};
+    const { name, color, position } = req.body || {};
     await pool.query(
-      'UPDATE categories SET name = COALESCE(?, name), color = COALESCE(?, color) WHERE id = ? AND user_id = ?',
-      [name ?? null, color ?? null, req.params.id, req.userId],
+      'UPDATE categories SET name = COALESCE(?, name), color = COALESCE(?, color), position = COALESCE(?, position) WHERE id = ? AND user_id = ?',
+      [name ?? null, color ?? null, position ?? null, req.params.id, req.userId],
     );
     res.json({ ok: true });
   }),
@@ -269,8 +273,8 @@ app.post(
     const t = req.body || {};
     const id = t.id || crypto.randomUUID();
     await pool.query(
-      `INSERT INTO tasks (id, user_id, title, notes, category_ids, client_id, due_date, recurrence, completed, pinned, attachments)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO tasks (id, user_id, title, notes, category_ids, client_id, due_date, due_time, due_time_label, recurrence, completed, pinned, attachments)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         req.userId,
@@ -279,6 +283,8 @@ app.post(
         JSON.stringify(t.categoryIds ?? []),
         t.clientId ?? null,
         t.dueDate,
+        t.dueTime || null,
+        t.dueTimeLabel || null,
         t.recurrence ?? 'none',
         !!t.completed,
         !!t.pinned,
@@ -309,6 +315,8 @@ app.put(
     setIfDefined('category_ids', t.categoryIds, JSON.stringify);
     setIfDefined('client_id', t.clientId);
     setIfDefined('due_date', t.dueDate);
+    setIfDefined('due_time', t.dueTime, (v) => v || null);
+    setIfDefined('due_time_label', t.dueTimeLabel, (v) => v || null);
     setIfDefined('recurrence', t.recurrence);
     setIfDefined('completed', t.completed, (v) => !!v);
     setIfDefined('pinned', t.pinned, (v) => !!v);
@@ -341,14 +349,15 @@ app.post(
     const { userId } = req;
 
     const categoryIdMap = new Map();
-    for (const category of categories) {
+    for (const [index, category] of categories.entries()) {
       const id = crypto.randomUUID();
       categoryIdMap.set(category.id, id);
-      await pool.query('INSERT INTO categories (id, user_id, name, color) VALUES (?, ?, ?, ?)', [
+      await pool.query('INSERT INTO categories (id, user_id, name, color, position) VALUES (?, ?, ?, ?, ?)', [
         id,
         userId,
         category.name,
         category.color,
+        index,
       ]);
     }
 
@@ -365,8 +374,8 @@ app.post(
       const remappedClientId = task.clientId ? (clientIdMap.get(task.clientId) ?? null) : null;
 
       await pool.query(
-        `INSERT INTO tasks (id, user_id, title, notes, category_ids, client_id, due_date, recurrence, completed, pinned, attachments)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO tasks (id, user_id, title, notes, category_ids, client_id, due_date, due_time, due_time_label, recurrence, completed, pinned, attachments)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id,
           userId,
@@ -375,6 +384,8 @@ app.post(
           JSON.stringify(remappedCategoryIds),
           remappedClientId,
           task.dueDate,
+          task.dueTime || null,
+          task.dueTimeLabel || null,
           task.recurrence ?? 'none',
           !!task.completed,
           !!task.pinned,
@@ -383,7 +394,10 @@ app.post(
       );
     }
 
-    const [dbCategories] = await pool.query('SELECT * FROM categories WHERE user_id = ?', [userId]);
+    const [dbCategories] = await pool.query(
+      'SELECT * FROM categories WHERE user_id = ? ORDER BY position ASC, created_at ASC',
+      [userId],
+    );
     const [dbClients] = await pool.query('SELECT * FROM clients WHERE user_id = ?', [userId]);
     const [dbTasks] = await pool.query('SELECT * FROM tasks WHERE user_id = ?', [userId]);
 
@@ -416,6 +430,9 @@ async function ensureColumn(table, column, definition) {
 async function runMigrations() {
   await ensureColumn('users', 'name', 'VARCHAR(255)');
   await ensureColumn('users', 'avatar', 'MEDIUMTEXT');
+  await ensureColumn('categories', 'position', 'INT NOT NULL DEFAULT 0');
+  await ensureColumn('tasks', 'due_time', 'VARCHAR(5)');
+  await ensureColumn('tasks', 'due_time_label', 'VARCHAR(255)');
 }
 
 const port = process.env.PORT || 3001;

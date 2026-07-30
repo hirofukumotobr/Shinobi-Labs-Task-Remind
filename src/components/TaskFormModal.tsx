@@ -32,6 +32,8 @@ export function TaskFormModal({ task, defaultCategoryIds, onClose }: TaskFormMod
   );
   const [clientId, setClientId] = useState<string | null>(task?.clientId ?? null);
   const [dueDate, setDueDate] = useState(task?.dueDate ?? toISODate(new Date()));
+  const [dueTime, setDueTime] = useState(task?.dueTime ?? '');
+  const [dueTimeLabel, setDueTimeLabel] = useState(task?.dueTimeLabel ?? '');
   const [recurrence, setRecurrence] = useState<Recurrence>(task?.recurrence ?? 'none');
   const [pinned, setPinned] = useState(task?.pinned ?? false);
   const [attachments, setAttachments] = useState<Attachment[]>(task?.attachments ?? []);
@@ -48,10 +50,23 @@ export function TaskFormModal({ task, defaultCategoryIds, onClose }: TaskFormMod
     e.preventDefault();
     if (!title.trim()) return;
 
+    const shared = {
+      title,
+      notes,
+      categoryIds,
+      clientId,
+      dueDate,
+      dueTime,
+      dueTimeLabel: dueTimeLabel.trim(),
+      recurrence,
+      pinned,
+      attachments,
+    };
+
     if (task) {
-      updateTask(task.id, { title, notes, categoryIds, clientId, dueDate, recurrence, pinned, attachments });
+      updateTask(task.id, shared);
     } else {
-      addTask({ title, notes, categoryIds, clientId, dueDate, recurrence, pinned, attachments });
+      addTask(shared);
     }
     onClose();
   }
@@ -156,6 +171,27 @@ export function TaskFormModal({ task, defaultCategoryIds, onClose }: TaskFormMod
               />
             </div>
           )}
+        </div>
+
+        <div className="flex gap-3">
+          <div className="w-32 shrink-0">
+            <label className="mb-1 block text-xs font-medium text-slate-500">{t.taskFormTimeLabel}</label>
+            <input
+              type="time"
+              value={dueTime}
+              onChange={(e) => setDueTime(e.target.value)}
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
+            />
+          </div>
+          <div className="flex-1">
+            <label className="mb-1 block text-xs font-medium text-slate-500">{t.taskFormTimeCaptionLabel}</label>
+            <input
+              value={dueTimeLabel}
+              onChange={(e) => setDueTimeLabel(e.target.value)}
+              placeholder={t.taskFormTimeCaptionPlaceholder}
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
+            />
+          </div>
         </div>
 
         <div>

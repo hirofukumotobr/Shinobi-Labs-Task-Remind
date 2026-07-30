@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useT } from '../i18n/useT';
+import { PasswordInput } from './PasswordInput';
 
 function errorMessage(code: string | null, t: ReturnType<typeof useT>): string | null {
   switch (code) {
@@ -16,53 +16,6 @@ function errorMessage(code: string | null, t: ReturnType<typeof useT>): string |
     default:
       return t.authErrorUnknown;
   }
-}
-
-interface PasswordFieldProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  autoComplete: string;
-  show: boolean;
-  onToggleShow: () => void;
-  showLabel: string;
-  hideLabel: string;
-}
-
-function PasswordField({
-  label,
-  value,
-  onChange,
-  autoComplete,
-  show,
-  onToggleShow,
-  showLabel,
-  hideLabel,
-}: PasswordFieldProps) {
-  return (
-    <div>
-      <label className="mb-1 block text-xs font-medium text-slate-500">{label}</label>
-      <div className="relative">
-        <input
-          type={show ? 'text' : 'password'}
-          autoComplete={autoComplete}
-          required
-          minLength={6}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 pr-9 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
-        />
-        <button
-          type="button"
-          onClick={onToggleShow}
-          aria-label={show ? hideLabel : showLabel}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-        >
-          {show ? <EyeOff size={16} /> : <Eye size={16} />}
-        </button>
-      </div>
-    </div>
-  );
 }
 
 export function AuthScreen() {
@@ -143,7 +96,7 @@ export function AuthScreen() {
             />
           </div>
 
-          <PasswordField
+          <PasswordInput
             label={t.authPassword}
             value={password}
             onChange={setPassword}
@@ -155,7 +108,7 @@ export function AuthScreen() {
           />
 
           {mode === 'signup' && (
-            <PasswordField
+            <PasswordInput
               label={t.authConfirmPassword}
               value={confirmPassword}
               onChange={setConfirmPassword}

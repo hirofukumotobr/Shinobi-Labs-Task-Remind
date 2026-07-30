@@ -50,6 +50,8 @@ interface NewTaskInput {
   categoryIds: string[];
   clientId: string | null;
   dueDate: string;
+  dueTime?: string;
+  dueTimeLabel?: string;
   recurrence: Recurrence;
   pinned: boolean;
   attachments: Attachment[];
@@ -80,6 +82,7 @@ interface AppState {
   addCategory: (name: string, color: string) => void;
   updateCategory: (id: string, changes: Partial<Pick<Category, 'name' | 'color'>>) => void;
   removeCategory: (id: string) => void;
+  moveCategory: (id: string, direction: 'up' | 'down') => void;
 
   addClient: (name: string) => void;
   updateClient: (id: string, name: string) => void;
@@ -172,6 +175,23 @@ export const useAppStore = create<AppState>()(
         }
       },
 
+      moveCategory: (id, direction) => {
+        const categories = get().categories;
+        const index = categories.findIndex((c) => c.id === id);
+        if (index === -1) return;
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+        if (targetIndex < 0 || targetIndex >= categories.length) return;
+
+        const reordered = [...categories];
+        const [moved] = reordered.splice(index, 1);
+        reordered.splice(targetIndex, 0, moved);
+        set({ categories: reordered });
+
+        if (get().userId) {
+          reordered.forEach((c, i) => fireAndForget(api.updateCategory(c.id, { position: i })));
+        }
+      },
+
       addClient: (name) => {
         const id = uid();
         set((state) => ({
@@ -205,7 +225,18 @@ export const useAppStore = create<AppState>()(
         }
       },
 
-      addTask: ({ title, notes, categoryIds, clientId, dueDate, recurrence, pinned, attachments }) => {
+      addTask: ({
+        title,
+        notes,
+        categoryIds,
+        clientId,
+        dueDate,
+        dueTime,
+        dueTimeLabel,
+        recurrence,
+        pinned,
+        attachments,
+      }) => {
         const newTask: Task = {
           id: uid(),
           title,
@@ -213,6 +244,8 @@ export const useAppStore = create<AppState>()(
           categoryIds,
           clientId,
           dueDate,
+          dueTime,
+          dueTimeLabel,
           recurrence,
           pinned,
           attachments,

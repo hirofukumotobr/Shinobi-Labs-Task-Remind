@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { useT } from '../i18n/useT';
 import { Modal } from './Modal';
@@ -17,6 +17,7 @@ export function CategoryModal({ onClose }: CategoryModalProps) {
   const addCategory = useAppStore((s) => s.addCategory);
   const removeCategory = useAppStore((s) => s.removeCategory);
   const updateCategory = useAppStore((s) => s.updateCategory);
+  const moveCategory = useAppStore((s) => s.moveCategory);
 
   const [name, setName] = useState('');
   const [color, setColor] = useState(colorPalette[0]);
@@ -39,8 +40,26 @@ export function CategoryModal({ onClose }: CategoryModalProps) {
   return (
     <Modal title={t.categoryManage} onClose={onClose}>
       <div className="flex flex-col gap-3">
-        {categories.map((category) => (
+        {categories.map((category, index) => (
           <div key={category.id} className="flex items-center gap-2">
+            <div className="flex shrink-0 flex-col">
+              <button
+                onClick={() => moveCategory(category.id, 'up')}
+                disabled={index === 0}
+                aria-label={t.categoryMoveUp}
+                className="rounded p-0.5 text-slate-400 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent dark:hover:bg-slate-800"
+              >
+                <ChevronUp size={14} />
+              </button>
+              <button
+                onClick={() => moveCategory(category.id, 'down')}
+                disabled={index === categories.length - 1}
+                aria-label={t.categoryMoveDown}
+                className="rounded p-0.5 text-slate-400 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent dark:hover:bg-slate-800"
+              >
+                <ChevronDown size={14} />
+              </button>
+            </div>
             <span className="size-3 shrink-0 rounded-full" style={{ backgroundColor: category.color }} />
             <input
               value={category.name}

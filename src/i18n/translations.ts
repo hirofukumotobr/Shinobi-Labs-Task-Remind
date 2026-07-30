@@ -81,6 +81,9 @@ export interface Translations {
   taskFormManageClients: string;
   taskFormNoClient: string;
   taskFormDueDateLabel: string;
+  taskFormTimeLabel: string;
+  taskFormTimeCaptionLabel: string;
+  taskFormTimeCaptionPlaceholder: string;
   taskFormRecurrenceLabel: string;
   taskFormMarkedAsPriority: string;
   taskFormMarkAsPriority: string;
@@ -94,6 +97,8 @@ export interface Translations {
   categoryNamePlaceholder: string;
   categoryColorAria: string;
   categoryConfirmRemove: (count: number) => string;
+  categoryMoveUp: string;
+  categoryMoveDown: string;
 
   clientManage: string;
   clientEmpty: string;
@@ -156,6 +161,7 @@ export interface Translations {
   taskDateDueToday: string;
   taskDateDueTomorrow: string;
   taskDateDueInDays: (days: number) => string;
+  taskDateAtTime: (time: string) => string;
 
   soundClassic: string;
   soundGentle: string;
@@ -300,6 +306,9 @@ export const translations: Record<'pt' | 'en', Translations> = {
     taskFormManageClients: 'Gerenciar clientes',
     taskFormNoClient: 'Sem cliente',
     taskFormDueDateLabel: 'Data de vencimento',
+    taskFormTimeLabel: 'Horário (opcional)',
+    taskFormTimeCaptionLabel: 'Legenda do horário (opcional)',
+    taskFormTimeCaptionPlaceholder: 'Ex: Entrega do projeto',
     taskFormRecurrenceLabel: 'Recorrência',
     taskFormMarkedAsPriority: 'Marcada como prioridade',
     taskFormMarkAsPriority: 'Marcar como prioridade',
@@ -314,6 +323,8 @@ export const translations: Record<'pt' | 'en', Translations> = {
     categoryColorAria: 'Cor',
     categoryConfirmRemove: (count) =>
       `Esta categoria tem ${count} tarefa(s). Elas ficarão sem categoria. Continuar?`,
+    categoryMoveUp: 'Mover para cima',
+    categoryMoveDown: 'Mover para baixo',
 
     clientManage: 'Gerenciar clientes',
     clientEmpty: 'Nenhum cliente cadastrado ainda.',
@@ -377,6 +388,7 @@ export const translations: Record<'pt' | 'en', Translations> = {
     taskDateDueToday: 'Vence hoje',
     taskDateDueTomorrow: 'Vence amanhã',
     taskDateDueInDays: (days) => `Vence em ${days} dias`,
+    taskDateAtTime: (time) => `até às ${time}`,
 
     soundClassic: 'Clássico',
     soundGentle: 'Suave',
@@ -471,6 +483,9 @@ export const translations: Record<'pt' | 'en', Translations> = {
     taskFormManageClients: 'Manage clients',
     taskFormNoClient: 'No client',
     taskFormDueDateLabel: 'Due date',
+    taskFormTimeLabel: 'Time (optional)',
+    taskFormTimeCaptionLabel: 'Time caption (optional)',
+    taskFormTimeCaptionPlaceholder: 'E.g.: Project delivery',
     taskFormRecurrenceLabel: 'Recurrence',
     taskFormMarkedAsPriority: 'Marked as priority',
     taskFormMarkAsPriority: 'Mark as priority',
@@ -485,6 +500,8 @@ export const translations: Record<'pt' | 'en', Translations> = {
     categoryColorAria: 'Color',
     categoryConfirmRemove: (count) =>
       `This category has ${count} task(s). They will become uncategorized. Continue?`,
+    categoryMoveUp: 'Move up',
+    categoryMoveDown: 'Move down',
 
     clientManage: 'Manage clients',
     clientEmpty: 'No clients yet.',
@@ -548,6 +565,7 @@ export const translations: Record<'pt' | 'en', Translations> = {
     taskDateDueToday: 'Due today',
     taskDateDueTomorrow: 'Due tomorrow',
     taskDateDueInDays: (days) => `Due in ${days} days`,
+    taskDateAtTime: (time) => `by ${time}`,
 
     soundClassic: 'Classic',
     soundGentle: 'Gentle',

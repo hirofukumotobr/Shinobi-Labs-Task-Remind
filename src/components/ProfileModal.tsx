@@ -3,6 +3,7 @@ import { User } from 'lucide-react';
 import { useT } from '../i18n/useT';
 import { ApiError, api, type UserProfile } from '../lib/apiClient';
 import { Modal } from './Modal';
+import { PasswordInput } from './PasswordInput';
 
 interface ProfileModalProps {
   profile: UserProfile;
@@ -39,6 +40,7 @@ export function ProfileModal({ profile, onUpdate, onClose }: ProfileModalProps) 
 
   const [name, setName] = useState(profile.name ?? '');
   const [avatar, setAvatar] = useState(profile.avatar);
+  const [showPassword, setShowPassword] = useState(false);
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileMessage, setProfileMessage] = useState<string | null>(null);
   const [profileError, setProfileError] = useState<string | null>(null);
@@ -199,16 +201,16 @@ export function ProfileModal({ profile, onUpdate, onClose }: ProfileModalProps) 
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
             />
           </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-500">{t.profileCurrentPasswordLabel}</label>
-            <input
-              type="password"
-              autoComplete="current-password"
-              value={emailPassword}
-              onChange={(e) => setEmailPassword(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
-            />
-          </div>
+          <PasswordInput
+            label={t.profileCurrentPasswordLabel}
+            value={emailPassword}
+            onChange={setEmailPassword}
+            autoComplete="current-password"
+            show={showPassword}
+            onToggleShow={() => setShowPassword((v) => !v)}
+            showLabel={t.authShowPassword}
+            hideLabel={t.authHidePassword}
+          />
 
           {emailError && <p className="text-sm text-red-600 dark:text-red-400">{emailError}</p>}
           {emailMessage && <p className="text-sm text-green-600 dark:text-green-400">{emailMessage}</p>}
@@ -227,38 +229,36 @@ export function ProfileModal({ profile, onUpdate, onClose }: ProfileModalProps) 
           className="flex flex-col gap-3 border-t border-slate-100 pt-4 dark:border-slate-800"
         >
           <h4 className="text-sm font-semibold">{t.profilePasswordSectionTitle}</h4>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-500">{t.profileCurrentPasswordLabel}</label>
-            <input
-              type="password"
-              autoComplete="current-password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-500">{t.profileNewPasswordLabel}</label>
-            <input
-              type="password"
-              autoComplete="new-password"
-              minLength={6}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-500">{t.profileConfirmPasswordLabel}</label>
-            <input
-              type="password"
-              autoComplete="new-password"
-              minLength={6}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
-            />
-          </div>
+          <PasswordInput
+            label={t.profileCurrentPasswordLabel}
+            value={currentPassword}
+            onChange={setCurrentPassword}
+            autoComplete="current-password"
+            show={showPassword}
+            onToggleShow={() => setShowPassword((v) => !v)}
+            showLabel={t.authShowPassword}
+            hideLabel={t.authHidePassword}
+          />
+          <PasswordInput
+            label={t.profileNewPasswordLabel}
+            value={newPassword}
+            onChange={setNewPassword}
+            autoComplete="new-password"
+            show={showPassword}
+            onToggleShow={() => setShowPassword((v) => !v)}
+            showLabel={t.authShowPassword}
+            hideLabel={t.authHidePassword}
+          />
+          <PasswordInput
+            label={t.profileConfirmPasswordLabel}
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            autoComplete="new-password"
+            show={showPassword}
+            onToggleShow={() => setShowPassword((v) => !v)}
+            showLabel={t.authShowPassword}
+            hideLabel={t.authHidePassword}
+          />
 
           {passwordError && <p className="text-sm text-red-600 dark:text-red-400">{passwordError}</p>}
           {passwordMessage && <p className="text-sm text-green-600 dark:text-green-400">{passwordMessage}</p>}
