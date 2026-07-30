@@ -5,6 +5,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const pool = require('./db');
 const { requireAuth, signToken } = require('./auth');
+const { scheduleBackups } = require('./backup');
 
 const app = express();
 app.use(cors());
@@ -438,4 +439,7 @@ async function runMigrations() {
 const port = process.env.PORT || 3001;
 runMigrations()
   .catch((err) => console.error('Migration failed:', err))
-  .finally(() => app.listen(port, () => console.log(`API listening on port ${port}`)));
+  .finally(() => {
+    app.listen(port, () => console.log(`API listening on port ${port}`));
+    scheduleBackups();
+  });
