@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useT } from '../i18n/useT';
 
@@ -17,15 +18,78 @@ function errorMessage(code: string | null, t: ReturnType<typeof useT>): string |
   }
 }
 
+interface PasswordFieldProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  autoComplete: string;
+  show: boolean;
+  onToggleShow: () => void;
+  showLabel: string;
+  hideLabel: string;
+}
+
+function PasswordField({
+  label,
+  value,
+  onChange,
+  autoComplete,
+  show,
+  onToggleShow,
+  showLabel,
+  hideLabel,
+}: PasswordFieldProps) {
+  return (
+    <div>
+      <label className="mb-1 block text-xs font-medium text-slate-500">{label}</label>
+      <div className="relative">
+        <input
+          type={show ? 'text' : 'password'}
+          autoComplete={autoComplete}
+          required
+          minLength={6}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full rounded-lg border border-slate-200 px-3 py-2 pr-9 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
+        />
+        <button
+          type="button"
+          onClick={onToggleShow}
+          aria-label={show ? hideLabel : showLabel}
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+        >
+          {show ? <EyeOff size={16} /> : <Eye size={16} />}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function AuthScreen() {
   const t = useT();
   const { signUp, signIn, error, submitting } = useAuth();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [mismatchError, setMismatchError] = useState(false);
+
+  function switchMode(next: 'signin' | 'signup') {
+    setMode(next);
+    setMismatchError(false);
+    setConfirmPassword('');
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setMismatchError(false);
+
+    if (mode === 'signup' && password !== confirmPassword) {
+      setMismatchError(true);
+      return;
+    }
+
     try {
       if (mode === 'signup') {
         await signUp(email, password);
@@ -37,6 +101,8 @@ export function AuthScreen() {
     }
   }
 
+  const displayError = mismatchError ? t.authErrorPasswordMismatch : errorMessage(error, t);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4 dark:bg-[#0f1115]">
       <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-sm dark:bg-[#181a20]">
@@ -46,7 +112,7 @@ export function AuthScreen() {
         <div className="mb-4 flex rounded-lg border border-slate-200 text-sm dark:border-slate-700">
           <button
             type="button"
-            onClick={() => setMode('signin')}
+            onClick={() => switchMode('signin')}
             className={`flex-1 rounded-l-lg py-2 font-medium ${
               mode === 'signin' ? 'bg-blue-600 text-white' : 'text-slate-500 dark:text-slate-400'
             }`}
@@ -55,7 +121,7 @@ export function AuthScreen() {
           </button>
           <button
             type="button"
-            onClick={() => setMode('signup')}
+            onClick={() => switchMode('signup')}
             className={`flex-1 rounded-r-lg py-2 font-medium ${
               mode === 'signup' ? 'bg-blue-600 text-white' : 'text-slate-500 dark:text-slate-400'
             }`}
@@ -76,20 +142,32 @@ export function AuthScreen() {
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
             />
           </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-500">{t.authPassword}</label>
-            <input
-              type="password"
-              autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
-            />
-          </div>
 
-          {error && <p className="text-sm text-red-600 dark:text-red-400">{errorMessage(error, t)}</p>}
+          <PasswordField
+            label={t.authPassword}
+            value={password}
+            onChange={setPassword}
+            autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+            show={showPassword}
+            onToggleShow={() => setShowPassword((v) => !v)}
+            showLabel={t.authShowPassword}
+            hideLabel={t.authHidePassword}
+          />
+
+          {mode === 'signup' && (
+            <PasswordField
+              label={t.authConfirmPassword}
+              value={confirmPassword}
+              onChange={setConfirmPassword}
+              autoComplete="new-password"
+              show={showPassword}
+              onToggleShow={() => setShowPassword((v) => !v)}
+              showLabel={t.authShowPassword}
+              hideLabel={t.authHidePassword}
+            />
+          )}
+
+          {displayError && <p className="text-sm text-red-600 dark:text-red-400">{displayError}</p>}
 
           <button
             type="submit"

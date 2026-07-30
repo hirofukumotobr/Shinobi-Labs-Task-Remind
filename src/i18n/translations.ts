@@ -34,6 +34,9 @@ export interface Translations {
   authSubtitle: string;
   authEmail: string;
   authPassword: string;
+  authConfirmPassword: string;
+  authShowPassword: string;
+  authHidePassword: string;
   authSignInTab: string;
   authSignUpTab: string;
   authSubmitSignIn: string;
@@ -41,12 +44,14 @@ export interface Translations {
   authErrorInvalidInput: string;
   authErrorEmailTaken: string;
   authErrorInvalidCredentials: string;
+  authErrorPasswordMismatch: string;
   authErrorUnknown: string;
   authLoadingCloudData: string;
   authImportLocalTitle: string;
   authImportLocalBody: string;
   authImportLocalButton: string;
   authImportLocalSkip: string;
+  authSignUpSuccess: string;
 
   sidebarCategories: string;
   sidebarManageCategories: string;
@@ -248,6 +253,9 @@ export const translations: Record<'pt' | 'en', Translations> = {
     authSubtitle: 'Suas tarefas em qualquer navegador ou dispositivo',
     authEmail: 'E-mail',
     authPassword: 'Senha',
+    authConfirmPassword: 'Confirmar senha',
+    authShowPassword: 'Mostrar senha',
+    authHidePassword: 'Ocultar senha',
     authSignInTab: 'Entrar',
     authSignUpTab: 'Criar conta',
     authSubmitSignIn: 'Entrar',
@@ -255,12 +263,14 @@ export const translations: Record<'pt' | 'en', Translations> = {
     authErrorInvalidInput: 'Preencha e-mail e senha (mínimo 6 caracteres).',
     authErrorEmailTaken: 'Este e-mail já está cadastrado.',
     authErrorInvalidCredentials: 'E-mail ou senha incorretos.',
+    authErrorPasswordMismatch: 'As senhas não coincidem.',
     authErrorUnknown: 'Não foi possível conectar. Tente novamente.',
     authLoadingCloudData: 'Carregando suas tarefas…',
     authImportLocalTitle: 'Encontramos tarefas salvas neste navegador',
     authImportLocalBody: 'Quer importar essas tarefas para sua conta agora?',
     authImportLocalButton: 'Importar para minha conta',
     authImportLocalSkip: 'Não importar',
+    authSignUpSuccess: 'Conta criada com sucesso! Bem-vindo(a).',
 
     sidebarCategories: 'Categorias',
     sidebarManageCategories: 'Gerenciar categorias',
@@ -414,6 +424,9 @@ export const translations: Record<'pt' | 'en', Translations> = {
     authSubtitle: 'Your tasks on any browser or device',
     authEmail: 'Email',
     authPassword: 'Password',
+    authConfirmPassword: 'Confirm password',
+    authShowPassword: 'Show password',
+    authHidePassword: 'Hide password',
     authSignInTab: 'Sign in',
     authSignUpTab: 'Create account',
     authSubmitSignIn: 'Sign in',
@@ -421,12 +434,14 @@ export const translations: Record<'pt' | 'en', Translations> = {
     authErrorInvalidInput: 'Fill in email and password (minimum 6 characters).',
     authErrorEmailTaken: 'This email is already registered.',
     authErrorInvalidCredentials: 'Incorrect email or password.',
+    authErrorPasswordMismatch: "Passwords don't match.",
     authErrorUnknown: 'Could not connect. Please try again.',
     authLoadingCloudData: 'Loading your tasks…',
     authImportLocalTitle: 'We found tasks saved on this browser',
     authImportLocalBody: 'Want to import those tasks into your account now?',
     authImportLocalButton: 'Import into my account',
     authImportLocalSkip: "Don't import",
+    authSignUpSuccess: 'Account created successfully! Welcome.',
 
     sidebarCategories: 'Categories',
     sidebarManageCategories: 'Manage categories',

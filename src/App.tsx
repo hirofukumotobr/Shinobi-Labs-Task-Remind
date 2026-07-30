@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { X } from 'lucide-react';
 import { useAppStore } from './store/useAppStore';
 import type { Task, TaskFilter } from './types';
 import { useAuth } from './hooks/useAuth';
@@ -44,6 +45,8 @@ function App() {
   const theme = useAppStore((s) => s.theme);
   const tasks = useAppStore((s) => s.tasks);
   const setCloudData = useAppStore((s) => s.setCloudData);
+  const justSignedUp = useAppStore((s) => s.justSignedUp);
+  const setJustSignedUp = useAppStore((s) => s.setJustSignedUp);
 
   const [filter, setFilter] = useState<TaskFilter>({ kind: 'all' });
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -58,6 +61,12 @@ function App() {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
+
+  useEffect(() => {
+    if (!justSignedUp) return;
+    const timer = setTimeout(() => setJustSignedUp(false), 6000);
+    return () => clearTimeout(timer);
+  }, [justSignedUp, setJustSignedUp]);
 
   useEffect(() => {
     if (!userId) {
@@ -192,6 +201,19 @@ function App() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header onNewTask={handleNewTask} profile={profile} onOpenProfile={() => setShowProfileModal(true)} />
+
+      {justSignedUp && (
+        <div className="flex items-center justify-between bg-green-50 px-6 py-2 text-sm text-green-700 dark:bg-green-950/30 dark:text-green-400">
+          <span>{t.authSignUpSuccess}</span>
+          <button
+            onClick={() => setJustSignedUp(false)}
+            aria-label={t.modalClose}
+            className="rounded p-1 hover:bg-green-100 dark:hover:bg-green-900/40"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       <div className="flex flex-1">
         <Sidebar filter={filter} onFilterChange={setFilter} onManageCategories={() => setShowCategoryModal(true)} />

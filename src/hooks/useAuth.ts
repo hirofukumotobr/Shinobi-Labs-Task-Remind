@@ -5,6 +5,7 @@ import { useAppStore } from '../store/useAppStore';
 export function useAuth() {
   const userId = useAppStore((s) => s.userId);
   const setStoreUserId = useAppStore((s) => s.setUserId);
+  const setJustSignedUp = useAppStore((s) => s.setJustSignedUp);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -15,6 +16,7 @@ export function useAuth() {
       try {
         const { token, userId: id } = await api.signUp(email, password);
         setToken(token);
+        setJustSignedUp(true);
         setStoreUserId(id);
       } catch (e) {
         setError(e instanceof ApiError ? e.message : 'unknown_error');
@@ -23,7 +25,7 @@ export function useAuth() {
         setSubmitting(false);
       }
     },
-    [setStoreUserId],
+    [setStoreUserId, setJustSignedUp],
   );
 
   const signIn = useCallback(

@@ -63,6 +63,7 @@ interface CloudData {
 
 interface AppState {
   userId: string | null;
+  justSignedUp: boolean;
   categories: Category[];
   clients: Client[];
   tasks: Task[];
@@ -73,6 +74,7 @@ interface AppState {
   selectedWeatherCityId: string | null;
 
   setUserId: (userId: string | null) => void;
+  setJustSignedUp: (value: boolean) => void;
   setCloudData: (data: CloudData) => void;
 
   addCategory: (name: string, color: string) => void;
@@ -107,6 +109,7 @@ export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
       userId: detectInitialUserId(),
+      justSignedUp: false,
       categories: getDefaultCategories(detectInitialLang()),
       clients: [],
       tasks: [],
@@ -125,6 +128,8 @@ export const useAppStore = create<AppState>()(
           set({ userId });
         }
       },
+
+      setJustSignedUp: (value) => set({ justSignedUp: value }),
 
       setCloudData: ({ categories, clients, tasks }) => set({ categories, clients, tasks }),
 
@@ -332,7 +337,8 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => {
         // userId is never persisted directly — the auth token (which encodes
         // it) is the source of truth in localStorage, restored via useAuth.
-        const { userId: _userId, ...rest } = state;
+        // justSignedUp is a one-shot UI flag, not app data.
+        const { userId: _userId, justSignedUp: _justSignedUp, ...rest } = state;
         return rest;
       },
     },
