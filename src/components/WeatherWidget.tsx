@@ -88,7 +88,7 @@ export function WeatherWidget() {
 
   return (
     <div className="flex min-w-[220px] flex-1 flex-col gap-1 rounded-lg border border-slate-200 px-4 py-2 dark:border-slate-800">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-col gap-1.5">
         <div className="flex min-w-0 items-center gap-2">
           <TodayIcon size={20} className="shrink-0 text-slate-400" />
           {weather.loading && <span className="text-sm text-slate-500 dark:text-slate-400">{t.weatherLoading}</span>}
@@ -133,7 +133,7 @@ export function WeatherWidget() {
           )}
         </div>
 
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex flex-wrap items-center gap-1">
           {weather.data && (
             <div className="mr-1 flex rounded-md border border-slate-200 text-[10px] dark:border-slate-700">
               <button

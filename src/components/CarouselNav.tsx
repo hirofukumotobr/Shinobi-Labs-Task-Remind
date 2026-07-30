@@ -18,9 +18,9 @@ export function CarouselNav({ index, count, onPrev, onNext }: CarouselNavProps) 
         type="button"
         onClick={onPrev}
         aria-label={t.carouselPrev}
-        className="rounded p-0.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+        className="rounded-md p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
       >
-        <ChevronLeft size={14} />
+        <ChevronLeft size={20} />
       </button>
       <div className="flex gap-1">
         {Array.from({ length: count }).map((_, i) => (
@@ -36,9 +36,9 @@ export function CarouselNav({ index, count, onPrev, onNext }: CarouselNavProps) 
         type="button"
         onClick={onNext}
         aria-label={t.carouselNext}
-        className="rounded p-0.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+        className="rounded-md p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
       >
-        <ChevronRight size={14} />
+        <ChevronRight size={20} />
       </button>
     </div>
   );

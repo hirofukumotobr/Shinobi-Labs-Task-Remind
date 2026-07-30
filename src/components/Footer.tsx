@@ -25,7 +25,7 @@ export function Footer() {
 
   return (
     <footer className="mt-auto flex flex-wrap gap-3 border-t border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-800 dark:bg-[#16171d]">
-      <div className="flex min-w-[180px] flex-col justify-center rounded-lg border border-slate-200 px-4 py-2 dark:border-slate-800">
+      <div className="flex min-w-[180px] flex-1 flex-col justify-center rounded-lg border border-slate-200 px-4 py-2 dark:border-slate-800">
         <span className="text-lg font-semibold tabular-nums">{format(now, 'HH:mm:ss')}</span>
         <span className="text-xs capitalize text-slate-500 dark:text-slate-400">
           {format(now, dateFormat, { locale: getDateFnsLocale(lang) })}

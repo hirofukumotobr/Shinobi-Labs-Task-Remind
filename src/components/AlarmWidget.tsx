@@ -37,7 +37,7 @@ export function AlarmWidget() {
     return (
       <button
         onClick={handleAdd}
-        className="flex min-w-[200px] items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 px-4 py-2 text-sm text-slate-500 hover:border-blue-400 hover:text-blue-600 dark:border-slate-700 dark:text-slate-400"
+        className="flex min-w-[200px] flex-1 items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 px-4 py-2 text-sm text-slate-500 hover:border-blue-400 hover:text-blue-600 dark:border-slate-700 dark:text-slate-400"
       >
         <AlarmClock size={18} />
         {t.alarmAddEmpty}
@@ -49,7 +49,7 @@ export function AlarmWidget() {
 
   return (
     <div
-      className={`flex min-w-[220px] flex-col justify-center gap-1 rounded-lg border px-4 py-2 ${
+      className={`flex min-w-[220px] flex-1 flex-col justify-center gap-1 rounded-lg border px-4 py-2 ${
         isRinging ? 'border-orange-400 bg-orange-50 dark:bg-orange-950/30' : 'border-slate-200 dark:border-slate-800'
       }`}
     >

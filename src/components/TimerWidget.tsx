@@ -28,7 +28,7 @@ export function TimerWidget() {
 
   if (timer.phase === 'overtime') {
     return (
-      <div className="flex min-w-[200px] flex-col justify-center gap-1 rounded-lg border border-red-400 bg-red-50 px-4 py-2 dark:bg-red-950/30">
+      <div className="flex min-w-[200px] flex-1 flex-col justify-center gap-1 rounded-lg border border-red-400 bg-red-50 px-4 py-2 dark:bg-red-950/30">
         <div className="flex items-center justify-between gap-3">
           <div className="flex flex-col">
             {timer.reason && <span className="text-xs text-red-500">{timer.reason}</span>}
@@ -48,7 +48,7 @@ export function TimerWidget() {
   }
 
   return (
-    <div className="flex min-w-[200px] flex-col justify-center gap-1 rounded-lg border border-slate-200 px-4 py-2 dark:border-slate-800">
+    <div className="flex min-w-[200px] flex-1 flex-col justify-center gap-1 rounded-lg border border-slate-200 px-4 py-2 dark:border-slate-800">
       <div className="flex items-center justify-between gap-3">
         <div className="flex flex-col">
           {timer.reason && <span className="truncate text-xs text-slate-400">{timer.reason}</span>}

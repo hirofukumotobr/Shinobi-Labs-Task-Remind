@@ -173,8 +173,8 @@ export function TaskFormModal({ task, defaultCategoryIds, onClose }: TaskFormMod
           )}
         </div>
 
-        <div className="flex gap-3">
-          <div className="w-32 shrink-0">
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="w-full sm:w-32 sm:shrink-0">
             <label className="mb-1 block text-xs font-medium text-slate-500">{t.taskFormTimeLabel}</label>
             <input
               type="time"
