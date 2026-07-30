@@ -6,6 +6,7 @@ export interface Translations {
   headerToggleLanguage: string;
   headerSignOut: string;
   headerOpenProfile: string;
+  headerGreeting: (name: string) => string;
 
   profileTitle: string;
   profileAvatarChange: string;
@@ -231,6 +232,7 @@ export const translations: Record<'pt' | 'en', Translations> = {
     headerToggleLanguage: 'Mudar idioma',
     headerSignOut: 'Sair',
     headerOpenProfile: 'Meu perfil',
+    headerGreeting: (name) => `Olá, ${name}`,
 
     profileTitle: 'Meu perfil',
     profileAvatarChange: 'Alterar foto',
@@ -408,6 +410,7 @@ export const translations: Record<'pt' | 'en', Translations> = {
     headerToggleLanguage: 'Switch language',
     headerSignOut: 'Sign out',
     headerOpenProfile: 'My profile',
+    headerGreeting: (name) => `Hi, ${name}`,
 
     profileTitle: 'My profile',
     profileAvatarChange: 'Change photo',
