@@ -3,13 +3,14 @@ import { useAppStore } from './store/useAppStore';
 import type { Task, TaskFilter } from './types';
 import { useAuth } from './hooks/useAuth';
 import { useT } from './i18n/useT';
-import { api } from './lib/apiClient';
+import { api, type UserProfile } from './lib/apiClient';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { TaskGrid } from './components/TaskGrid';
 import { Footer } from './components/Footer';
 import { TaskFormModal } from './components/TaskFormModal';
 import { CategoryModal } from './components/CategoryModal';
+import { ProfileModal } from './components/ProfileModal';
 import { AuthScreen } from './components/AuthScreen';
 
 interface LocalSnapshot {
@@ -48,6 +49,8 @@ function App() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
 
   const [loadState, setLoadState] = useState<LoadState>('ready');
   const [pendingLocalData, setPendingLocalData] = useState<LocalSnapshot | null>(null);
@@ -97,6 +100,23 @@ function App() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
+
+  useEffect(() => {
+    if (!userId) {
+      setProfile(null);
+      return;
+    }
+    let cancelled = false;
+    api
+      .getProfile()
+      .then((data) => {
+        if (!cancelled) setProfile(data);
+      })
+      .catch((err) => console.error('Failed to load profile:', err));
+    return () => {
+      cancelled = true;
+    };
   }, [userId]);
 
   const filteredTasks = useMemo(() => {
@@ -171,7 +191,7 @@ function App() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header onNewTask={handleNewTask} />
+      <Header onNewTask={handleNewTask} profile={profile} onOpenProfile={() => setShowProfileModal(true)} />
 
       <div className="flex flex-1">
         <Sidebar filter={filter} onFilterChange={setFilter} onManageCategories={() => setShowCategoryModal(true)} />
@@ -192,6 +212,10 @@ function App() {
       )}
 
       {showCategoryModal && <CategoryModal onClose={() => setShowCategoryModal(false)} />}
+
+      {showProfileModal && profile && (
+        <ProfileModal profile={profile} onUpdate={setProfile} onClose={() => setShowProfileModal(false)} />
+      )}
     </div>
   );
 }

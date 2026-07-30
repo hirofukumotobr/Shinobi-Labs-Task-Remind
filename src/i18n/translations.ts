@@ -5,6 +5,31 @@ export interface Translations {
   headerToggleTheme: string;
   headerToggleLanguage: string;
   headerSignOut: string;
+  headerOpenProfile: string;
+
+  profileTitle: string;
+  profileAvatarChange: string;
+  profileAvatarRemove: string;
+  profileNameLabel: string;
+  profileNamePlaceholder: string;
+  profileSaveProfile: string;
+  profileProfileSaved: string;
+  profileEmailSectionTitle: string;
+  profileCurrentEmailLabel: string;
+  profileNewEmailLabel: string;
+  profileCurrentPasswordLabel: string;
+  profileChangeEmail: string;
+  profileEmailChanged: string;
+  profilePasswordSectionTitle: string;
+  profileNewPasswordLabel: string;
+  profileConfirmPasswordLabel: string;
+  profileChangePassword: string;
+  profilePasswordChanged: string;
+  profileErrorIncorrectPassword: string;
+  profileErrorEmailTaken: string;
+  profileErrorPasswordMismatch: string;
+  profileErrorInvalidInput: string;
+  profileErrorUnknown: string;
 
   authSubtitle: string;
   authEmail: string;
@@ -194,6 +219,31 @@ export const translations: Record<'pt' | 'en', Translations> = {
     headerToggleTheme: 'Alternar tema',
     headerToggleLanguage: 'Mudar idioma',
     headerSignOut: 'Sair',
+    headerOpenProfile: 'Meu perfil',
+
+    profileTitle: 'Meu perfil',
+    profileAvatarChange: 'Alterar foto',
+    profileAvatarRemove: 'Remover foto',
+    profileNameLabel: 'Nome completo',
+    profileNamePlaceholder: 'Seu nome completo',
+    profileSaveProfile: 'Salvar perfil',
+    profileProfileSaved: 'Perfil atualizado.',
+    profileEmailSectionTitle: 'E-mail',
+    profileCurrentEmailLabel: 'E-mail atual',
+    profileNewEmailLabel: 'Novo e-mail',
+    profileCurrentPasswordLabel: 'Senha atual',
+    profileChangeEmail: 'Salvar e-mail',
+    profileEmailChanged: 'E-mail atualizado.',
+    profilePasswordSectionTitle: 'Senha',
+    profileNewPasswordLabel: 'Nova senha',
+    profileConfirmPasswordLabel: 'Confirmar nova senha',
+    profileChangePassword: 'Salvar senha',
+    profilePasswordChanged: 'Senha atualizada.',
+    profileErrorIncorrectPassword: 'Senha atual incorreta.',
+    profileErrorEmailTaken: 'Este e-mail já está cadastrado.',
+    profileErrorPasswordMismatch: 'As senhas não coincidem.',
+    profileErrorInvalidInput: 'Preencha todos os campos (senha com no mínimo 6 caracteres).',
+    profileErrorUnknown: 'Não foi possível salvar. Tente novamente.',
 
     authSubtitle: 'Suas tarefas em qualquer navegador ou dispositivo',
     authEmail: 'E-mail',
@@ -335,6 +385,31 @@ export const translations: Record<'pt' | 'en', Translations> = {
     headerToggleTheme: 'Toggle theme',
     headerToggleLanguage: 'Switch language',
     headerSignOut: 'Sign out',
+    headerOpenProfile: 'My profile',
+
+    profileTitle: 'My profile',
+    profileAvatarChange: 'Change photo',
+    profileAvatarRemove: 'Remove photo',
+    profileNameLabel: 'Full name',
+    profileNamePlaceholder: 'Your full name',
+    profileSaveProfile: 'Save profile',
+    profileProfileSaved: 'Profile updated.',
+    profileEmailSectionTitle: 'Email',
+    profileCurrentEmailLabel: 'Current email',
+    profileNewEmailLabel: 'New email',
+    profileCurrentPasswordLabel: 'Current password',
+    profileChangeEmail: 'Save email',
+    profileEmailChanged: 'Email updated.',
+    profilePasswordSectionTitle: 'Password',
+    profileNewPasswordLabel: 'New password',
+    profileConfirmPasswordLabel: 'Confirm new password',
+    profileChangePassword: 'Save password',
+    profilePasswordChanged: 'Password updated.',
+    profileErrorIncorrectPassword: 'Incorrect current password.',
+    profileErrorEmailTaken: 'This email is already registered.',
+    profileErrorPasswordMismatch: "Passwords don't match.",
+    profileErrorInvalidInput: 'Fill in all fields (password must be at least 6 characters).',
+    profileErrorUnknown: 'Could not save. Please try again.',
 
     authSubtitle: 'Your tasks on any browser or device',
     authEmail: 'Email',

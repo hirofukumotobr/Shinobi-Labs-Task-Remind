@@ -18,6 +18,10 @@ function mapCategoryRow(row) {
   return { id: row.id, name: row.name, color: row.color };
 }
 
+function mapUserRow(row) {
+  return { id: row.id, email: row.email, name: row.name, avatar: row.avatar };
+}
+
 function mapClientRow(row) {
   return { id: row.id, name: row.name };
 }
@@ -81,6 +85,85 @@ app.post(
     if (!ok) return res.status(401).json({ error: 'invalid_credentials' });
 
     res.json({ token: signToken(user.id), userId: user.id });
+  }),
+);
+
+// --- Profile ---
+
+app.get(
+  '/me',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const [rows] = await pool.query('SELECT id, email, name, avatar FROM users WHERE id = ?', [req.userId]);
+    if (rows.length === 0) return res.status(404).json({ error: 'not_found' });
+    res.json(mapUserRow(rows[0]));
+  }),
+);
+
+app.put(
+  '/me',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const { name, avatar } = req.body || {};
+    const fields = [];
+    const values = [];
+    if (name !== undefined) {
+      fields.push('name = ?');
+      values.push(name);
+    }
+    if (avatar !== undefined) {
+      fields.push('avatar = ?');
+      values.push(avatar);
+    }
+    if (fields.length > 0) {
+      values.push(req.userId);
+      await pool.query(`UPDATE users SET ${fields.join(', ')} WHERE id = ?`, values);
+    }
+    const [rows] = await pool.query('SELECT id, email, name, avatar FROM users WHERE id = ?', [req.userId]);
+    res.json(mapUserRow(rows[0]));
+  }),
+);
+
+app.put(
+  '/me/email',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const { newEmail, currentPassword } = req.body || {};
+    if (!newEmail || !currentPassword) return res.status(400).json({ error: 'invalid_input' });
+    const normalizedEmail = String(newEmail).trim().toLowerCase();
+
+    const [rows] = await pool.query('SELECT password_hash FROM users WHERE id = ?', [req.userId]);
+    const ok = rows.length > 0 && (await bcrypt.compare(currentPassword, rows[0].password_hash));
+    if (!ok) return res.status(401).json({ error: 'incorrect_password' });
+
+    const [existing] = await pool.query('SELECT id FROM users WHERE email = ? AND id != ?', [
+      normalizedEmail,
+      req.userId,
+    ]);
+    if (existing.length > 0) return res.status(409).json({ error: 'email_taken' });
+
+    await pool.query('UPDATE users SET email = ? WHERE id = ?', [normalizedEmail, req.userId]);
+    const [updated] = await pool.query('SELECT id, email, name, avatar FROM users WHERE id = ?', [req.userId]);
+    res.json(mapUserRow(updated[0]));
+  }),
+);
+
+app.put(
+  '/me/password',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body || {};
+    if (!currentPassword || !newPassword || newPassword.length < 6) {
+      return res.status(400).json({ error: 'invalid_input' });
+    }
+
+    const [rows] = await pool.query('SELECT password_hash FROM users WHERE id = ?', [req.userId]);
+    const ok = rows.length > 0 && (await bcrypt.compare(currentPassword, rows[0].password_hash));
+    if (!ok) return res.status(401).json({ error: 'incorrect_password' });
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await pool.query('UPDATE users SET password_hash = ? WHERE id = ?', [passwordHash, req.userId]);
+    res.json({ ok: true });
   }),
 );
 
@@ -320,5 +403,12 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'internal_error' });
 });
 
+async function runMigrations() {
+  await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR(255)');
+  await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar MEDIUMTEXT');
+}
+
 const port = process.env.PORT || 3001;
-app.listen(port, () => console.log(`API listening on port ${port}`));
+runMigrations()
+  .catch((err) => console.error('Migration failed:', err))
+  .finally(() => app.listen(port, () => console.log(`API listening on port ${port}`)));

@@ -1,13 +1,16 @@
-import { LogOut, Moon, Plus, Sun } from 'lucide-react';
+import { LogOut, Moon, Plus, Sun, User } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { useT } from '../i18n/useT';
 import { useAuth } from '../hooks/useAuth';
+import type { UserProfile } from '../lib/apiClient';
 
 interface HeaderProps {
   onNewTask: () => void;
+  profile: UserProfile | null;
+  onOpenProfile: () => void;
 }
 
-export function Header({ onNewTask }: HeaderProps) {
+export function Header({ onNewTask, profile, onOpenProfile }: HeaderProps) {
   const t = useT();
   const { signOut } = useAuth();
   const theme = useAppStore((s) => s.theme);
@@ -42,6 +45,17 @@ export function Header({ onNewTask }: HeaderProps) {
           className="rounded-lg border border-slate-200 p-2 text-slate-500 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
         >
           {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+        <button
+          onClick={onOpenProfile}
+          aria-label={t.headerOpenProfile}
+          className="overflow-hidden rounded-lg border border-slate-200 p-2 text-slate-500 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+        >
+          {profile?.avatar ? (
+            <img src={profile.avatar} alt="" className="-m-2 size-[34px] object-cover" />
+          ) : (
+            <User size={18} />
+          )}
         </button>
         <button
           onClick={signOut}

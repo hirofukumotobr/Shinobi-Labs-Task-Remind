@@ -60,6 +60,13 @@ interface AuthResponse {
   userId: string;
 }
 
+export interface UserProfile {
+  id: string;
+  email: string;
+  name: string | null;
+  avatar: string | null;
+}
+
 interface SyncResponse {
   categories: Category[];
   clients: Client[];
@@ -93,4 +100,12 @@ export const api = {
   updateTask: (id: string, changes: Partial<Omit<Task, 'id' | 'createdAt'>>) =>
     request(`/tasks/${id}`, { method: 'PUT', body: JSON.stringify(changes) }),
   deleteTask: (id: string) => request(`/tasks/${id}`, { method: 'DELETE' }),
+
+  getProfile: () => request<UserProfile>('/me'),
+  updateProfile: (changes: Partial<Pick<UserProfile, 'name' | 'avatar'>>) =>
+    request<UserProfile>('/me', { method: 'PUT', body: JSON.stringify(changes) }),
+  changeEmail: (newEmail: string, currentPassword: string) =>
+    request<UserProfile>('/me/email', { method: 'PUT', body: JSON.stringify({ newEmail, currentPassword }) }),
+  changePassword: (currentPassword: string, newPassword: string) =>
+    request('/me/password', { method: 'PUT', body: JSON.stringify({ currentPassword, newPassword }) }),
 };
