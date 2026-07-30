@@ -13,7 +13,12 @@ import type {
 } from '../types';
 import { nextDueDate, toISODate } from '../utils/date';
 import { translations } from '../i18n/translations';
-import { api } from '../lib/apiClient';
+import { api, decodeUserId, getToken } from '../lib/apiClient';
+
+function detectInitialUserId(): string | null {
+  const token = getToken();
+  return token ? decodeUserId(token) : null;
+}
 
 function uid(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -101,7 +106,7 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
-      userId: null,
+      userId: detectInitialUserId(),
       categories: getDefaultCategories(detectInitialLang()),
       clients: [],
       tasks: [],
