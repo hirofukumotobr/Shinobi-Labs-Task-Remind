@@ -27,7 +27,7 @@ export function Header({ onNewTask, profile, onOpenProfile }: HeaderProps) {
 
       <div className="flex items-center gap-2">
         {firstName && (
-          <span className="mr-1 hidden text-sm text-slate-500 dark:text-slate-400 sm:inline">
+          <span className="mr-1 hidden text-base font-semibold text-slate-700 dark:text-slate-200 sm:inline">
             {t.headerGreeting(firstName)}
           </span>
         )}
