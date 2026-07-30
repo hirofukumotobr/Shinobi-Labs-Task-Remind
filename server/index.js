@@ -403,9 +403,19 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'internal_error' });
 });
 
+async function ensureColumn(table, column, definition) {
+  const [rows] = await pool.query(
+    'SELECT COUNT(*) AS cnt FROM information_schema.COLUMNS WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?',
+    [table, column],
+  );
+  if (rows[0].cnt === 0) {
+    await pool.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+}
+
 async function runMigrations() {
-  await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR(255)');
-  await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar MEDIUMTEXT');
+  await ensureColumn('users', 'name', 'VARCHAR(255)');
+  await ensureColumn('users', 'avatar', 'MEDIUMTEXT');
 }
 
 const port = process.env.PORT || 3001;
