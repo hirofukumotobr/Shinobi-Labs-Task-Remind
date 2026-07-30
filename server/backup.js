@@ -1,42 +1,26 @@
-const { execFile } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const pool = require('./db');
 
 const BACKUP_DIR = process.env.BACKUP_DIR || '/app/backups';
 const KEEP_DAYS = 14;
 const INTERVAL_MS = 24 * 60 * 60 * 1000;
+const TABLES = ['users', 'categories', 'clients', 'tasks'];
 
 function timestamp() {
   return new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
 }
 
-function runBackup() {
-  return new Promise((resolve, reject) => {
-    fs.mkdirSync(BACKUP_DIR, { recursive: true });
-    const file = path.join(BACKUP_DIR, `backup-${timestamp()}.sql`);
-    const args = [
-      '-h',
-      process.env.DB_HOST,
-      '-P',
-      process.env.DB_PORT || '3306',
-      '-u',
-      process.env.DB_USER,
-      '--single-transaction',
-      '--routines',
-      process.env.DB_NAME,
-    ];
-
-    execFile(
-      'mysqldump',
-      args,
-      { env: { ...process.env, MYSQL_PWD: process.env.DB_PASSWORD }, maxBuffer: 1024 * 1024 * 200 },
-      (err, stdout) => {
-        if (err) return reject(err);
-        fs.writeFileSync(file, stdout);
-        resolve(file);
-      },
-    );
-  });
+async function runBackup() {
+  fs.mkdirSync(BACKUP_DIR, { recursive: true });
+  const dump = {};
+  for (const table of TABLES) {
+    const [rows] = await pool.query(`SELECT * FROM ${table}`);
+    dump[table] = rows;
+  }
+  const file = path.join(BACKUP_DIR, `backup-${timestamp()}.json`);
+  fs.writeFileSync(file, JSON.stringify(dump, null, 2));
+  return file;
 }
 
 function pruneOldBackups() {
