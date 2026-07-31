@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { User } from 'lucide-react';
 import { useT } from '../i18n/useT';
 import { ApiError, api, type UserProfile } from '../lib/apiClient';
+import { cropImageToSquareDataUrl } from '../utils/image';
 import { Modal } from './Modal';
 import { PasswordInput } from './PasswordInput';
 
@@ -12,15 +13,6 @@ interface ProfileModalProps {
 }
 
 const MAX_AVATAR_SIZE = 2 * 1024 * 1024;
-
-function readFileAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
 
 function errorMessage(code: string, t: ReturnType<typeof useT>): string {
   switch (code) {
@@ -65,7 +57,7 @@ export function ProfileModal({ profile, onUpdate, onClose }: ProfileModalProps) 
       window.alert(t.attachmentTooLarge(file.name));
       return;
     }
-    const dataUrl = await readFileAsDataUrl(file);
+    const dataUrl = await cropImageToSquareDataUrl(file);
     setAvatar(dataUrl);
   }
 
