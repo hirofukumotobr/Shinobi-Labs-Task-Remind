@@ -55,7 +55,7 @@ function App() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
-  const [loadState, setLoadState] = useState<LoadState>('ready');
+  const [loadState, setLoadState] = useState<LoadState>(userId ? 'loading' : 'ready');
   const [pendingLocalData, setPendingLocalData] = useState<LocalSnapshot | null>(null);
 
   useEffect(() => {

@@ -209,13 +209,15 @@ export const useAppStore = create<AppState>()(
 
       removeClient: (id) => {
         const affectedTaskIds = get()
-          .tasks.filter((t) => t.clientIds.includes(id))
+          .tasks.filter((t) => (t.clientIds ?? []).includes(id))
           .map((t) => t.id);
 
         set((state) => ({
           clients: state.clients.filter((c) => c.id !== id),
           tasks: state.tasks.map((t) =>
-            t.clientIds.includes(id) ? { ...t, clientIds: t.clientIds.filter((c) => c !== id) } : t,
+            (t.clientIds ?? []).includes(id)
+              ? { ...t, clientIds: t.clientIds.filter((c) => c !== id) }
+              : t,
           ),
         }));
 
