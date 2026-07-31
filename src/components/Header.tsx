@@ -51,7 +51,7 @@ export function Header({ onNewTask, profile, onOpenProfile }: HeaderProps) {
           className="overflow-hidden rounded-lg border border-slate-200 p-2 text-slate-500 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
         >
           {profile?.avatar ? (
-            <img src={profile.avatar} alt="" className="-m-2 size-[34px] object-cover" />
+            <img src={profile.avatar} alt="" className="-m-2 size-[34px] rounded-full object-cover" />
           ) : (
             <User size={18} />
           )}
