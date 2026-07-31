@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { User } from 'lucide-react';
 import { useT } from '../i18n/useT';
 import { ApiError, api, type UserProfile } from '../lib/apiClient';
-import { cropImageToSquareDataUrl } from '../utils/image';
+import { cropImageToSquareDataUrl, readFileAsDataUrl } from '../utils/image';
 import { Modal } from './Modal';
 import { PasswordInput } from './PasswordInput';
 
@@ -57,8 +57,12 @@ export function ProfileModal({ profile, onUpdate, onClose }: ProfileModalProps) 
       window.alert(t.attachmentTooLarge(file.name));
       return;
     }
-    const dataUrl = await cropImageToSquareDataUrl(file);
-    setAvatar(dataUrl);
+    try {
+      setAvatar(await cropImageToSquareDataUrl(file));
+    } catch (err) {
+      console.error('Avatar crop failed, falling back to the original file:', err);
+      setAvatar(await readFileAsDataUrl(file));
+    }
   }
 
   async function handleSaveProfile(e: React.FormEvent) {

@@ -1,3 +1,12 @@
+export function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export async function cropImageToSquareDataUrl(file: File, size = 256): Promise<string> {
   const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
 
