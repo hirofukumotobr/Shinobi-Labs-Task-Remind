@@ -11,16 +11,30 @@ export function useAlarms() {
   const removeAlarm = useAppStore((s) => s.removeAlarm);
   const [ringingId, setRingingId] = useState<string | null>(null);
   const stopSoundRef = useRef<(() => void) | null>(null);
+  const firedRef = useRef<{ minute: string; ids: Set<string> }>({ minute: '', ids: new Set() });
 
   useEffect(() => {
     const id = window.setInterval(() => {
-      const now = format(new Date(), 'HH:mm');
+      const now = new Date();
+      const nowStr = format(now, 'HH:mm');
+      const today = now.getDay();
+
+      if (firedRef.current.minute !== nowStr) {
+        firedRef.current = { minute: nowStr, ids: new Set() };
+      }
+
       const store = useAppStore.getState();
-      const match = store.alarms.find((a) => a.enabled && a.time === now);
+      const match = store.alarms.find(
+        (a) =>
+          a.enabled &&
+          a.time === nowStr &&
+          (a.days ?? [0, 1, 2, 3, 4, 5, 6]).includes(today) &&
+          !firedRef.current.ids.has(a.id),
+      );
       if (match) {
+        firedRef.current.ids.add(match.id);
         const t = translations[store.language];
         setRingingId(match.id);
-        store.updateAlarm(match.id, { enabled: false });
         stopSoundRef.current = playAlertSound(match.soundId);
         notifyUser(t.alarmNotificationTitle, match.reason || t.alarmNotificationBody(match.time));
       }

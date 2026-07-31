@@ -138,6 +138,8 @@ export interface Translations {
   alarmReasonPlaceholder: string;
   alarmNotificationTitle: string;
   alarmNotificationBody: (time: string) => string;
+  alarmDays: [string, string, string, string, string, string, string];
+  alarmDaysEveryDay: string;
 
   weatherAddCity: string;
   weatherLoading: string;
@@ -366,6 +368,8 @@ export const translations: Record<'pt' | 'en', Translations> = {
     alarmReasonPlaceholder: 'Motivo (opcional)',
     alarmNotificationTitle: 'Alarme',
     alarmNotificationBody: (time) => `Alarme das ${time}`,
+    alarmDays: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+    alarmDaysEveryDay: 'Todos os dias',
 
     weatherAddCity: 'Adicionar cidade para ver o clima',
     weatherLoading: 'Carregando…',
@@ -544,6 +548,8 @@ export const translations: Record<'pt' | 'en', Translations> = {
     alarmReasonPlaceholder: 'Reason (optional)',
     alarmNotificationTitle: 'Alarm',
     alarmNotificationBody: (time) => `Alarm for ${time}`,
+    alarmDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    alarmDaysEveryDay: 'Every day',
 
     weatherAddCity: 'Add a city to see the weather',
     weatherLoading: 'Loading…',

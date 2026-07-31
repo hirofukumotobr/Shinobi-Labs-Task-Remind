@@ -33,6 +33,14 @@ export function AlarmWidget() {
     setIndex((i) => Math.max(0, i - 1));
   }
 
+  function toggleDay(day: number) {
+    if (!current) return;
+    const days = current.days ?? [0, 1, 2, 3, 4, 5, 6];
+    const nextDays = days.includes(day) ? days.filter((d) => d !== day) : [...days, day];
+    if (nextDays.length === 0) return;
+    updateAlarm(current.id, { days: nextDays });
+  }
+
   if (alarms.length === 0) {
     return (
       <button
@@ -65,6 +73,19 @@ export function AlarmWidget() {
               className="bg-transparent text-lg font-semibold tabular-nums outline-none"
             />
             {current.reason && <span className="text-xs text-slate-400">{current.reason}</span>}
+            {(() => {
+              const days = current.days ?? [0, 1, 2, 3, 4, 5, 6];
+              if (days.length === 7) return null;
+              return (
+                <span className="text-xs text-slate-400">
+                  {days
+                    .slice()
+                    .sort((a, b) => a - b)
+                    .map((d) => t.alarmDays[d])
+                    .join(', ')}
+                </span>
+              );
+            })()}
           </div>
         </div>
 
@@ -113,24 +134,45 @@ export function AlarmWidget() {
       </div>
 
       {showSettings && !isRinging && (
-        <div className="flex items-center gap-1.5 pt-1">
-          <input
-            value={current.reason}
-            onChange={(e) => updateAlarm(current.id, { reason: e.target.value })}
-            placeholder={t.alarmReasonPlaceholder}
-            className="flex-1 rounded-md border border-slate-200 px-2 py-1 text-xs outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
-          />
-          <select
-            value={current.soundId}
-            onChange={(e) => updateAlarm(current.id, { soundId: e.target.value as SoundId })}
-            className="rounded-md border border-slate-200 px-2 py-1 text-xs outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
-          >
-            {soundIds.map((id) => (
-              <option key={id} value={id}>
-                {getSoundLabel(id, t)}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-col gap-1.5 pt-1">
+          <div className="flex items-center gap-1.5">
+            <input
+              value={current.reason}
+              onChange={(e) => updateAlarm(current.id, { reason: e.target.value })}
+              placeholder={t.alarmReasonPlaceholder}
+              className="flex-1 rounded-md border border-slate-200 px-2 py-1 text-xs outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
+            />
+            <select
+              value={current.soundId}
+              onChange={(e) => updateAlarm(current.id, { soundId: e.target.value as SoundId })}
+              className="rounded-md border border-slate-200 px-2 py-1 text-xs outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
+            >
+              {soundIds.map((id) => (
+                <option key={id} value={id}>
+                  {getSoundLabel(id, t)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-1">
+            {t.alarmDays.map((label, day) => {
+              const active = (current.days ?? [0, 1, 2, 3, 4, 5, 6]).includes(day);
+              return (
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() => toggleDay(day)}
+                  className={`size-6 rounded-full text-[10px] font-semibold ${
+                    active
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                  }`}
+                >
+                  {label.slice(0, 1)}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 

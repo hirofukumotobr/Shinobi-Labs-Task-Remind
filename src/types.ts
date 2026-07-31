@@ -42,6 +42,8 @@ export interface AlarmItem {
   reason: string;
   enabled: boolean;
   soundId: SoundId;
+  /** Days of week the alarm should ring, 0 = Sunday .. 6 = Saturday (matches Date#getDay). */
+  days: number[];
 }
 
 export interface WeatherCity {

@@ -325,6 +325,7 @@ export const useAppStore = create<AppState>()(
             reason: '',
             enabled: false,
             soundId: 'classic',
+            days: [0, 1, 2, 3, 4, 5, 6],
           };
           return { alarms: [...state.alarms, newAlarm] };
         }),
