@@ -48,7 +48,7 @@ interface NewTaskInput {
   title: string;
   notes?: string;
   categoryIds: string[];
-  clientId: string | null;
+  clientIds: string[];
   dueDate: string;
   dueTime?: string;
   dueTimeLabel?: string;
@@ -209,18 +209,22 @@ export const useAppStore = create<AppState>()(
 
       removeClient: (id) => {
         const affectedTaskIds = get()
-          .tasks.filter((t) => t.clientId === id)
+          .tasks.filter((t) => t.clientIds.includes(id))
           .map((t) => t.id);
 
         set((state) => ({
           clients: state.clients.filter((c) => c.id !== id),
-          tasks: state.tasks.map((t) => (t.clientId === id ? { ...t, clientId: null } : t)),
+          tasks: state.tasks.map((t) =>
+            t.clientIds.includes(id) ? { ...t, clientIds: t.clientIds.filter((c) => c !== id) } : t,
+          ),
         }));
 
         if (get().userId) {
           fireAndForget(api.deleteClient(id));
+          const updatedTasks = get().tasks;
           for (const taskId of affectedTaskIds) {
-            fireAndForget(api.updateTask(taskId, { clientId: null }));
+            const task = updatedTasks.find((t) => t.id === taskId);
+            if (task) fireAndForget(api.updateTask(taskId, { clientIds: task.clientIds }));
           }
         }
       },
@@ -229,7 +233,7 @@ export const useAppStore = create<AppState>()(
         title,
         notes,
         categoryIds,
-        clientId,
+        clientIds,
         dueDate,
         dueTime,
         dueTimeLabel,
@@ -242,7 +246,7 @@ export const useAppStore = create<AppState>()(
           title,
           notes,
           categoryIds,
-          clientId,
+          clientIds,
           dueDate,
           dueTime,
           dueTimeLabel,
@@ -287,7 +291,7 @@ export const useAppStore = create<AppState>()(
             title: task.title,
             notes: task.notes,
             categoryIds: task.categoryIds,
-            clientId: task.clientId,
+            clientIds: task.clientIds,
             dueDate: nextDueDate(task.dueDate, task.recurrence),
             recurrence: task.recurrence,
             completed: false,

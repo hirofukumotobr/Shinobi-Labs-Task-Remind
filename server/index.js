@@ -33,7 +33,7 @@ function mapTaskRow(row) {
     title: row.title,
     notes: row.notes ?? undefined,
     categoryIds: typeof row.category_ids === 'string' ? JSON.parse(row.category_ids) : row.category_ids,
-    clientId: row.client_id,
+    clientIds: typeof row.client_ids === 'string' ? JSON.parse(row.client_ids) : (row.client_ids ?? []),
     dueDate: row.due_date,
     dueTime: row.due_time ?? undefined,
     dueTimeLabel: row.due_time_label ?? undefined,
@@ -274,7 +274,7 @@ app.post(
     const t = req.body || {};
     const id = t.id || crypto.randomUUID();
     await pool.query(
-      `INSERT INTO tasks (id, user_id, title, notes, category_ids, client_id, due_date, due_time, due_time_label, recurrence, completed, pinned, attachments)
+      `INSERT INTO tasks (id, user_id, title, notes, category_ids, client_ids, due_date, due_time, due_time_label, recurrence, completed, pinned, attachments)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
@@ -282,7 +282,7 @@ app.post(
         t.title,
         t.notes ?? null,
         JSON.stringify(t.categoryIds ?? []),
-        t.clientId ?? null,
+        JSON.stringify(t.clientIds ?? []),
         t.dueDate,
         t.dueTime || null,
         t.dueTimeLabel || null,
@@ -314,7 +314,7 @@ app.put(
     setIfDefined('title', t.title);
     setIfDefined('notes', t.notes);
     setIfDefined('category_ids', t.categoryIds, JSON.stringify);
-    setIfDefined('client_id', t.clientId);
+    setIfDefined('client_ids', t.clientIds, JSON.stringify);
     setIfDefined('due_date', t.dueDate);
     setIfDefined('due_time', t.dueTime, (v) => v || null);
     setIfDefined('due_time_label', t.dueTimeLabel, (v) => v || null);
@@ -372,10 +372,10 @@ app.post(
     for (const task of tasks) {
       const id = crypto.randomUUID();
       const remappedCategoryIds = (task.categoryIds ?? []).map((cid) => categoryIdMap.get(cid)).filter(Boolean);
-      const remappedClientId = task.clientId ? (clientIdMap.get(task.clientId) ?? null) : null;
+      const remappedClientIds = (task.clientIds ?? []).map((cid) => clientIdMap.get(cid)).filter(Boolean);
 
       await pool.query(
-        `INSERT INTO tasks (id, user_id, title, notes, category_ids, client_id, due_date, due_time, due_time_label, recurrence, completed, pinned, attachments)
+        `INSERT INTO tasks (id, user_id, title, notes, category_ids, client_ids, due_date, due_time, due_time_label, recurrence, completed, pinned, attachments)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id,
@@ -383,7 +383,7 @@ app.post(
           task.title,
           task.notes ?? null,
           JSON.stringify(remappedCategoryIds),
-          remappedClientId,
+          JSON.stringify(remappedClientIds),
           task.dueDate,
           task.dueTime || null,
           task.dueTimeLabel || null,
@@ -418,12 +418,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'internal_error' });
 });
 
-async function ensureColumn(table, column, definition) {
+async function columnExists(table, column) {
   const [rows] = await pool.query(
     'SELECT COUNT(*) AS cnt FROM information_schema.COLUMNS WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?',
     [table, column],
   );
-  if (rows[0].cnt === 0) {
+  return rows[0].cnt > 0;
+}
+
+async function ensureColumn(table, column, definition) {
+  if (!(await columnExists(table, column))) {
     await pool.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
   }
 }
@@ -434,6 +438,19 @@ async function runMigrations() {
   await ensureColumn('categories', 'position', 'INT NOT NULL DEFAULT 0');
   await ensureColumn('tasks', 'due_time', 'VARCHAR(5)');
   await ensureColumn('tasks', 'due_time_label', 'VARCHAR(255)');
+
+  const hadClientIds = await columnExists('tasks', 'client_ids');
+  await ensureColumn('tasks', 'client_ids', 'JSON');
+  if (!hadClientIds) {
+    // Backfill from the old single-client column (if present) into the new array column.
+    if (await columnExists('tasks', 'client_id')) {
+      await pool.query(
+        'UPDATE tasks SET client_ids = IF(client_id IS NULL, JSON_ARRAY(), JSON_ARRAY(client_id)) WHERE client_ids IS NULL',
+      );
+    } else {
+      await pool.query('UPDATE tasks SET client_ids = JSON_ARRAY() WHERE client_ids IS NULL');
+    }
+  }
 }
 
 const port = process.env.PORT || 3001;

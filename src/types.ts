@@ -23,7 +23,7 @@ export interface Task {
   title: string;
   notes?: string;
   categoryIds: string[];
-  clientId: string | null;
+  clientIds: string[];
   dueDate: string;
   dueTime?: string;
   dueTimeLabel?: string;

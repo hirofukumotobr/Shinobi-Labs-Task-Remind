@@ -7,7 +7,7 @@ import { useLang, useT } from '../i18n/useT';
 interface TaskCardProps {
   task: Task;
   categories: Category[];
-  client: Client | undefined;
+  clients: Client[];
   onEdit: () => void;
 }
 
@@ -27,7 +27,7 @@ const urgencyTextStyles: Record<string, string> = {
   done: 'text-slate-400',
 };
 
-export function TaskCard({ task, categories, client, onEdit }: TaskCardProps) {
+export function TaskCard({ task, categories, clients, onEdit }: TaskCardProps) {
   const t = useT();
   const lang = useLang();
   const toggleTaskCompleted = useAppStore((s) => s.toggleTaskCompleted);
@@ -72,12 +72,15 @@ export function TaskCard({ task, categories, client, onEdit }: TaskCardProps) {
             {category.name}
           </span>
         ))}
-        {client && (
-          <span className="flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+        {clients.map((client) => (
+          <span
+            key={client.id}
+            className="flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+          >
             <User size={12} />
             {client.name}
           </span>
-        )}
+        ))}
         {task.recurrence !== 'none' && (
           <span className="flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
             <Repeat size={12} />

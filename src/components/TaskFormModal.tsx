@@ -30,7 +30,7 @@ export function TaskFormModal({ task, defaultCategoryIds, onClose }: TaskFormMod
   const [categoryIds, setCategoryIds] = useState<string[]>(
     task?.categoryIds ?? defaultCategoryIds ?? [],
   );
-  const [clientId, setClientId] = useState<string | null>(task?.clientId ?? null);
+  const [clientIds, setClientIds] = useState<string[]>(task?.clientIds ?? []);
   const [dueDate, setDueDate] = useState(task?.dueDate ?? toISODate(new Date()));
   const [dueTime, setDueTime] = useState(task?.dueTime ?? '');
   const [dueTimeLabel, setDueTimeLabel] = useState(task?.dueTimeLabel ?? '');
@@ -46,6 +46,12 @@ export function TaskFormModal({ task, defaultCategoryIds, onClose }: TaskFormMod
     );
   }
 
+  function toggleClient(id: string) {
+    setClientIds((current) =>
+      current.includes(id) ? current.filter((c) => c !== id) : [...current, id],
+    );
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) return;
@@ -54,7 +60,7 @@ export function TaskFormModal({ task, defaultCategoryIds, onClose }: TaskFormMod
       title,
       notes,
       categoryIds,
-      clientId,
+      clientIds,
       dueDate,
       dueTime,
       dueTimeLabel: dueTimeLabel.trim(),
@@ -137,18 +143,28 @@ export function TaskFormModal({ task, defaultCategoryIds, onClose }: TaskFormMod
               {t.taskFormManageClients}
             </button>
           </div>
-          <select
-            value={clientId ?? ''}
-            onChange={(e) => setClientId(e.target.value || null)}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
-          >
-            <option value="">{t.taskFormNoClient}</option>
-            {clients.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          <div className="flex flex-wrap gap-1.5">
+            {clients.map((c) => {
+              const active = clientIds.includes(c.id);
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => toggleClient(c.id)}
+                  className={`rounded-full border px-2.5 py-1 text-xs font-medium transition ${
+                    active
+                      ? 'border-transparent bg-blue-600 text-white'
+                      : 'border-slate-200 text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  {c.name}
+                </button>
+              );
+            })}
+            {clients.length === 0 && (
+              <span className="text-sm text-slate-400">{t.taskFormNoClient}</span>
+            )}
+          </div>
         </div>
 
         <div>

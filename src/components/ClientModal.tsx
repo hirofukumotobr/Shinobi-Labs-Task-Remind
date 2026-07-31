@@ -26,7 +26,7 @@ export function ClientModal({ onClose }: ClientModalProps) {
   }
 
   function handleRemove(id: string) {
-    const count = tasks.filter((t) => t.clientId === id).length;
+    const count = tasks.filter((t) => t.clientIds.includes(id)).length;
     if (count > 0 && !window.confirm(t.clientConfirmRemove(count))) {
       return;
     }

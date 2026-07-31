@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   title VARCHAR(500) NOT NULL,
   notes TEXT,
   category_ids JSON NOT NULL,
-  client_id CHAR(36),
+  client_ids JSON NOT NULL,
   due_date DATE NOT NULL,
   due_time VARCHAR(5),
   due_time_label VARCHAR(255),
@@ -40,6 +40,5 @@ CREATE TABLE IF NOT EXISTS tasks (
   pinned BOOLEAN NOT NULL DEFAULT FALSE,
   attachments JSON NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

@@ -36,7 +36,7 @@ export function TaskGrid({ tasks, onEditTask }: TaskGridProps) {
           key={task.id}
           task={task}
           categories={categories.filter((c) => task.categoryIds.includes(c.id))}
-          client={clients.find((c) => c.id === task.clientId)}
+          clients={clients.filter((c) => task.clientIds.includes(c.id))}
           onEdit={() => onEditTask(task)}
         />
       ))}
