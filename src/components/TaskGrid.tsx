@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import type { Task } from '../types';
 import { useAppStore } from '../store/useAppStore';
 import { useT } from '../i18n/useT';
+import { useNow } from '../hooks/useNow';
 import { TaskCard } from './TaskCard';
 
 interface TaskGridProps {
@@ -13,6 +14,9 @@ export function TaskGrid({ tasks, onEditTask }: TaskGridProps) {
   const t = useT();
   const categories = useAppStore((s) => s.categories);
   const clients = useAppStore((s) => s.clients);
+  // Re-render periodically (and immediately on refocus) so "vence em N dias"
+  // style labels in TaskCard stay accurate on a page left open for a while.
+  useNow();
 
   const sorted = useMemo(() => {
     return [...tasks].sort((a, b) => {
