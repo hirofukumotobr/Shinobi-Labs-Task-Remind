@@ -10,11 +10,11 @@ export function useAuth() {
   const [submitting, setSubmitting] = useState(false);
 
   const signUp = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string, signupCode: string) => {
       setSubmitting(true);
       setError(null);
       try {
-        const { token, userId: id } = await api.signUp(email, password);
+        const { token, userId: id } = await api.signUp(email, password, signupCode);
         setToken(token);
         setJustSignedUp(true);
         setStoreUserId(id);

@@ -74,8 +74,11 @@ interface SyncResponse {
 }
 
 export const api = {
-  signUp: (email: string, password: string) =>
-    request<AuthResponse>('/auth/signup', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  signUp: (email: string, password: string, signupCode: string) =>
+    request<AuthResponse>('/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, signupCode }),
+    }),
 
   signIn: (email: string, password: string) =>
     request<AuthResponse>('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
@@ -108,4 +111,6 @@ export const api = {
     request<UserProfile>('/me/email', { method: 'PUT', body: JSON.stringify({ newEmail, currentPassword }) }),
   changePassword: (currentPassword: string, newPassword: string) =>
     request('/me/password', { method: 'PUT', body: JSON.stringify({ currentPassword, newPassword }) }),
+  deleteAccount: (password: string) =>
+    request('/me', { method: 'DELETE', body: JSON.stringify({ password }) }),
 };

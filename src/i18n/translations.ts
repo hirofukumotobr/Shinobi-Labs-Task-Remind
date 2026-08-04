@@ -31,11 +31,19 @@ export interface Translations {
   profileErrorPasswordMismatch: string;
   profileErrorInvalidInput: string;
   profileErrorUnknown: string;
+  profileDangerZoneTitle: string;
+  profileDangerZoneWarning: string;
+  profileDeleteAccount: string;
+  profileDeleteAccountConfirmLabel: string;
+  profileDeleteAccountConfirmButton: string;
+  profileDeleteAccountCancel: string;
 
   authSubtitle: string;
   authEmail: string;
   authPassword: string;
   authConfirmPassword: string;
+  authSignupCode: string;
+  authSignupCodePlaceholder: string;
   authShowPassword: string;
   authHidePassword: string;
   authSignInTab: string;
@@ -46,6 +54,7 @@ export interface Translations {
   authErrorEmailTaken: string;
   authErrorInvalidCredentials: string;
   authErrorPasswordMismatch: string;
+  authErrorInvalidSignupCode: string;
   authErrorUnknown: string;
   authLoadingCloudData: string;
   authImportLocalTitle: string;
@@ -97,6 +106,7 @@ export interface Translations {
   categoryNewLabel: string;
   categoryNamePlaceholder: string;
   categoryColorAria: string;
+  categoryCustomColorAria: string;
   categoryConfirmRemove: (count: number) => string;
   categoryMoveUp: string;
   categoryMoveDown: string;
@@ -259,11 +269,20 @@ export const translations: Record<'pt' | 'en', Translations> = {
     profileErrorPasswordMismatch: 'As senhas não coincidem.',
     profileErrorInvalidInput: 'Preencha todos os campos (senha com no mínimo 6 caracteres).',
     profileErrorUnknown: 'Não foi possível salvar. Tente novamente.',
+    profileDangerZoneTitle: 'Perigo',
+    profileDangerZoneWarning:
+      'Excluir sua conta é permanente. Todas as suas tarefas, categorias e clientes serão apagados do banco de dados e não podem ser recuperados.',
+    profileDeleteAccount: 'Excluir conta',
+    profileDeleteAccountConfirmLabel: 'Digite sua senha para confirmar',
+    profileDeleteAccountConfirmButton: 'Sim, excluir permanentemente',
+    profileDeleteAccountCancel: 'Cancelar',
 
     authSubtitle: 'Suas tarefas em qualquer navegador ou dispositivo',
     authEmail: 'E-mail',
     authPassword: 'Senha',
     authConfirmPassword: 'Confirmar senha',
+    authSignupCode: 'Código de acesso',
+    authSignupCodePlaceholder: 'Código fornecido por quem te convidou',
     authShowPassword: 'Mostrar senha',
     authHidePassword: 'Ocultar senha',
     authSignInTab: 'Entrar',
@@ -274,6 +293,7 @@ export const translations: Record<'pt' | 'en', Translations> = {
     authErrorEmailTaken: 'Este e-mail já está cadastrado.',
     authErrorInvalidCredentials: 'E-mail ou senha incorretos.',
     authErrorPasswordMismatch: 'As senhas não coincidem.',
+    authErrorInvalidSignupCode: 'Código de acesso inválido.',
     authErrorUnknown: 'Não foi possível conectar. Tente novamente.',
     authLoadingCloudData: 'Carregando suas tarefas…',
     authImportLocalTitle: 'Encontramos tarefas salvas neste navegador',
@@ -325,6 +345,7 @@ export const translations: Record<'pt' | 'en', Translations> = {
     categoryNewLabel: 'Nova categoria',
     categoryNamePlaceholder: 'Nome da categoria',
     categoryColorAria: 'Cor',
+    categoryCustomColorAria: 'Escolher cor personalizada',
     categoryConfirmRemove: (count) =>
       `Esta categoria tem ${count} tarefa(s). Elas ficarão sem categoria. Continuar?`,
     categoryMoveUp: 'Mover para cima',
@@ -439,11 +460,20 @@ export const translations: Record<'pt' | 'en', Translations> = {
     profileErrorPasswordMismatch: "Passwords don't match.",
     profileErrorInvalidInput: 'Fill in all fields (password must be at least 6 characters).',
     profileErrorUnknown: 'Could not save. Please try again.',
+    profileDangerZoneTitle: 'Danger',
+    profileDangerZoneWarning:
+      'Deleting your account is permanent. All your tasks, categories and clients will be erased from the database and cannot be recovered.',
+    profileDeleteAccount: 'Delete account',
+    profileDeleteAccountConfirmLabel: 'Type your password to confirm',
+    profileDeleteAccountConfirmButton: 'Yes, delete permanently',
+    profileDeleteAccountCancel: 'Cancel',
 
     authSubtitle: 'Your tasks on any browser or device',
     authEmail: 'Email',
     authPassword: 'Password',
     authConfirmPassword: 'Confirm password',
+    authSignupCode: 'Access code',
+    authSignupCodePlaceholder: 'Code provided by whoever invited you',
     authShowPassword: 'Show password',
     authHidePassword: 'Hide password',
     authSignInTab: 'Sign in',
@@ -454,6 +484,7 @@ export const translations: Record<'pt' | 'en', Translations> = {
     authErrorEmailTaken: 'This email is already registered.',
     authErrorInvalidCredentials: 'Incorrect email or password.',
     authErrorPasswordMismatch: "Passwords don't match.",
+    authErrorInvalidSignupCode: 'Invalid access code.',
     authErrorUnknown: 'Could not connect. Please try again.',
     authLoadingCloudData: 'Loading your tasks…',
     authImportLocalTitle: 'We found tasks saved on this browser',
@@ -505,6 +536,7 @@ export const translations: Record<'pt' | 'en', Translations> = {
     categoryNewLabel: 'New category',
     categoryNamePlaceholder: 'Category name',
     categoryColorAria: 'Color',
+    categoryCustomColorAria: 'Choose custom color',
     categoryConfirmRemove: (count) =>
       `This category has ${count} task(s). They will become uncategorized. Continue?`,
     categoryMoveUp: 'Move up',

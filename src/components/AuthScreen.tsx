@@ -11,6 +11,8 @@ function errorMessage(code: string | null, t: ReturnType<typeof useT>): string |
       return t.authErrorEmailTaken;
     case 'invalid_credentials':
       return t.authErrorInvalidCredentials;
+    case 'invalid_signup_code':
+      return t.authErrorInvalidSignupCode;
     case null:
       return null;
     default:
@@ -25,6 +27,7 @@ export function AuthScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [signupCode, setSignupCode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [mismatchError, setMismatchError] = useState(false);
 
@@ -45,7 +48,7 @@ export function AuthScreen() {
 
     try {
       if (mode === 'signup') {
-        await signUp(email, password);
+        await signUp(email, password, signupCode);
       } else {
         await signIn(email, password);
       }
@@ -118,6 +121,19 @@ export function AuthScreen() {
               showLabel={t.authShowPassword}
               hideLabel={t.authHidePassword}
             />
+          )}
+
+          {mode === 'signup' && (
+            <div>
+              <label className="mb-1 block text-xs font-medium text-slate-500">{t.authSignupCode}</label>
+              <input
+                required
+                value={signupCode}
+                onChange={(e) => setSignupCode(e.target.value)}
+                placeholder={t.authSignupCodePlaceholder}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
+              />
+            </div>
           )}
 
           {displayError && <p className="text-sm text-red-600 dark:text-red-400">{displayError}</p>}

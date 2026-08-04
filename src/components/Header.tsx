@@ -20,9 +20,12 @@ export function Header({ onNewTask, profile, onOpenProfile }: HeaderProps) {
 
   return (
     <header className="flex flex-col gap-3 border-b border-slate-200 bg-white px-4 py-4 dark:border-slate-800 dark:bg-[#16171d] sm:flex-row sm:items-center sm:justify-between sm:px-6">
-      <div>
-        <h1 className="text-lg font-semibold">{t.headerTitle}</h1>
-        <p className="text-xs text-slate-400">{t.headerSubtitle}</p>
+      <div className="flex items-center gap-3">
+        <img src="/icon-512.png" alt="" className="size-14 shrink-0 sm:size-16" />
+        <div>
+          <h1 className="text-lg font-semibold">{t.headerTitle}</h1>
+          <p className="text-xs text-slate-400">{t.headerSubtitle}</p>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">

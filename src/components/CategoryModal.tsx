@@ -103,6 +103,24 @@ export function CategoryModal({ onClose }: CategoryModalProps) {
                 style={{ backgroundColor: c }}
               />
             ))}
+            <label
+              aria-label={t.categoryCustomColorAria}
+              className={`relative size-6 shrink-0 cursor-pointer overflow-hidden rounded-full ${
+                !colorPalette.includes(color) ? 'ring-2 ring-offset-2 ring-slate-400 dark:ring-offset-[#1c1e26]' : ''
+              }`}
+              style={{
+                background: !colorPalette.includes(color)
+                  ? color
+                  : 'conic-gradient(red, yellow, lime, cyan, blue, magenta, red)',
+              }}
+            >
+              <input
+                type="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                className="absolute inset-0 size-full cursor-pointer opacity-0"
+              />
+            </label>
           </div>
         </form>
       </div>

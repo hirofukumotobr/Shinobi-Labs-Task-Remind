@@ -50,9 +50,12 @@ function mapTaskRow(row) {
 app.post(
   '/auth/signup',
   asyncHandler(async (req, res) => {
-    const { email, password } = req.body || {};
+    const { email, password, signupCode } = req.body || {};
     if (!email || !password || password.length < 6) {
       return res.status(400).json({ error: 'invalid_input' });
+    }
+    if (process.env.SIGNUP_CODE && signupCode !== process.env.SIGNUP_CODE) {
+      return res.status(403).json({ error: 'invalid_signup_code' });
     }
     const normalizedEmail = String(email).trim().toLowerCase();
 
@@ -166,6 +169,24 @@ app.put(
 
     const passwordHash = await bcrypt.hash(newPassword, 10);
     await pool.query('UPDATE users SET password_hash = ? WHERE id = ?', [passwordHash, req.userId]);
+    res.json({ ok: true });
+  }),
+);
+
+app.delete(
+  '/me',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const { password } = req.body || {};
+    if (!password) return res.status(400).json({ error: 'invalid_input' });
+
+    const [rows] = await pool.query('SELECT password_hash FROM users WHERE id = ?', [req.userId]);
+    const ok = rows.length > 0 && (await bcrypt.compare(password, rows[0].password_hash));
+    if (!ok) return res.status(401).json({ error: 'incorrect_password' });
+
+    // categories, clients and tasks are all removed automatically via
+    // ON DELETE CASCADE on their user_id foreign key.
+    await pool.query('DELETE FROM users WHERE id = ?', [req.userId]);
     res.json({ ok: true });
   }),
 );

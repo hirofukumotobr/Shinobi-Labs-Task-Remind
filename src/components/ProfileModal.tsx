@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { User } from 'lucide-react';
+import { AlertTriangle, User } from 'lucide-react';
 import { useT } from '../i18n/useT';
+import { useAuth } from '../hooks/useAuth';
 import { ApiError, api, type UserProfile } from '../lib/apiClient';
 import { cropImageToSquareDataUrl, readFileAsDataUrl } from '../utils/image';
 import { Modal } from './Modal';
@@ -29,6 +30,7 @@ function errorMessage(code: string, t: ReturnType<typeof useT>): string {
 
 export function ProfileModal({ profile, onUpdate, onClose }: ProfileModalProps) {
   const t = useT();
+  const { signOut } = useAuth();
 
   const [name, setName] = useState(profile.name ?? '');
   const [avatar, setAvatar] = useState(profile.avatar);
@@ -49,6 +51,11 @@ export function ProfileModal({ profile, onUpdate, onClose }: ProfileModalProps) 
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  const [deleteConfirming, setDeleteConfirming] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteSaving, setDeleteSaving] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   async function handleAvatarChange(fileList: FileList | null) {
     const file = fileList?.[0];
@@ -118,6 +125,21 @@ export function ProfileModal({ profile, onUpdate, onClose }: ProfileModalProps) 
       setPasswordError(err instanceof ApiError ? errorMessage(err.message, t) : errorMessage('unknown', t));
     } finally {
       setPasswordSaving(false);
+    }
+  }
+
+  async function handleDeleteAccount(e: React.FormEvent) {
+    e.preventDefault();
+    setDeleteError(null);
+    setDeleteSaving(true);
+    try {
+      await api.deleteAccount(deletePassword);
+      signOut();
+      onClose();
+    } catch (err) {
+      setDeleteError(err instanceof ApiError ? errorMessage(err.message, t) : errorMessage('unknown', t));
+    } finally {
+      setDeleteSaving(false);
     }
   }
 
@@ -267,6 +289,60 @@ export function ProfileModal({ profile, onUpdate, onClose }: ProfileModalProps) 
             {t.profileChangePassword}
           </button>
         </form>
+
+        <div className="flex flex-col gap-3 rounded-lg border border-red-300 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/20">
+          <h4 className="flex items-center gap-1.5 text-sm font-semibold text-red-700 dark:text-red-400">
+            <AlertTriangle size={16} />
+            {t.profileDangerZoneTitle}
+          </h4>
+          <p className="text-xs text-red-700/80 dark:text-red-400/80">{t.profileDangerZoneWarning}</p>
+
+          {!deleteConfirming ? (
+            <button
+              type="button"
+              onClick={() => setDeleteConfirming(true)}
+              className="self-start rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700"
+            >
+              {t.profileDeleteAccount}
+            </button>
+          ) : (
+            <form onSubmit={handleDeleteAccount} className="flex flex-col gap-3">
+              <PasswordInput
+                label={t.profileDeleteAccountConfirmLabel}
+                value={deletePassword}
+                onChange={setDeletePassword}
+                autoComplete="current-password"
+                show={showPassword}
+                onToggleShow={() => setShowPassword((v) => !v)}
+                showLabel={t.authShowPassword}
+                hideLabel={t.authHidePassword}
+              />
+
+              {deleteError && <p className="text-sm text-red-600 dark:text-red-400">{deleteError}</p>}
+
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={deleteSaving || !deletePassword}
+                  className="rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60"
+                >
+                  {t.profileDeleteAccountConfirmButton}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeleteConfirming(false);
+                    setDeletePassword('');
+                    setDeleteError(null);
+                  }}
+                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                  {t.profileDeleteAccountCancel}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
     </Modal>
   );
