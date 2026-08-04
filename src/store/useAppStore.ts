@@ -85,7 +85,7 @@ interface AppState {
   moveCategory: (id: string, direction: 'up' | 'down') => void;
 
   addClient: (name: string) => void;
-  updateClient: (id: string, name: string) => void;
+  updateClient: (id: string, changes: Partial<Pick<Client, 'name' | 'logo'>>) => void;
   removeClient: (id: string) => void;
 
   addTask: (input: NewTaskInput) => void;
@@ -200,11 +200,11 @@ export const useAppStore = create<AppState>()(
         if (get().userId) fireAndForget(api.createClient({ id, name }));
       },
 
-      updateClient: (id, name) => {
+      updateClient: (id, changes) => {
         set((state) => ({
-          clients: state.clients.map((c) => (c.id === id ? { ...c, name } : c)),
+          clients: state.clients.map((c) => (c.id === id ? { ...c, ...changes } : c)),
         }));
-        if (get().userId) fireAndForget(api.updateClient(id, name));
+        if (get().userId) fireAndForget(api.updateClient(id, changes));
       },
 
       removeClient: (id) => {

@@ -77,7 +77,11 @@ export function TaskCard({ task, categories, clients, onEdit }: TaskCardProps) {
             key={client.id}
             className="flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
           >
-            <User size={12} />
+            {client.logo ? (
+              <img src={client.logo} alt="" className="size-3 shrink-0 rounded-full object-cover" />
+            ) : (
+              <User size={12} />
+            )}
             {client.name}
           </span>
         ))}

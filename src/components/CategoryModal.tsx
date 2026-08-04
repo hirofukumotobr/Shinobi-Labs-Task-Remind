@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { useT } from '../i18n/useT';
@@ -21,6 +21,18 @@ export function CategoryModal({ onClose }: CategoryModalProps) {
 
   const [name, setName] = useState('');
   const [color, setColor] = useState(colorPalette[0]);
+  const [hexDraft, setHexDraft] = useState(color);
+
+  useEffect(() => {
+    setHexDraft(color);
+  }, [color]);
+
+  function handleHexChange(value: string) {
+    setHexDraft(value);
+    if (/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/.test(value)) {
+      setColor(value);
+    }
+  }
 
   function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -121,6 +133,14 @@ export function CategoryModal({ onClose }: CategoryModalProps) {
                 className="absolute inset-0 size-full cursor-pointer opacity-0"
               />
             </label>
+            <input
+              value={hexDraft}
+              onChange={(e) => handleHexChange(e.target.value)}
+              placeholder="#RRGGBB"
+              maxLength={7}
+              spellCheck={false}
+              className="w-24 rounded-lg border border-slate-200 px-2 py-1 text-xs uppercase outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
+            />
           </div>
         </form>
       </div>

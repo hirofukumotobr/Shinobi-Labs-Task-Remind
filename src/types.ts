@@ -9,6 +9,7 @@ export interface Category {
 export interface Client {
   id: string;
   name: string;
+  logo?: string | null;
 }
 
 export interface Attachment {

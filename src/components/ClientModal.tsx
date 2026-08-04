@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Building2, Trash2 } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { useT } from '../i18n/useT';
+import { cropImageToSquareDataUrl, readFileAsDataUrl } from '../utils/image';
 import { Modal } from './Modal';
 
 interface ClientModalProps {
   onClose: () => void;
 }
+
+const MAX_LOGO_SIZE = 2 * 1024 * 1024;
 
 export function ClientModal({ onClose }: ClientModalProps) {
   const t = useT();
@@ -25,6 +28,21 @@ export function ClientModal({ onClose }: ClientModalProps) {
     setName('');
   }
 
+  async function handleLogoChange(clientId: string, fileList: FileList | null) {
+    const file = fileList?.[0];
+    if (!file) return;
+    if (file.size > MAX_LOGO_SIZE) {
+      window.alert(t.attachmentTooLarge(file.name));
+      return;
+    }
+    try {
+      updateClient(clientId, { logo: await cropImageToSquareDataUrl(file) });
+    } catch (err) {
+      console.error('Logo crop failed, falling back to the original file:', err);
+      updateClient(clientId, { logo: await readFileAsDataUrl(file) });
+    }
+  }
+
   function handleRemove(id: string) {
     const count = tasks.filter((t) => (t.clientIds ?? []).includes(id)).length;
     if (count > 0 && !window.confirm(t.clientConfirmRemove(count))) {
@@ -39,9 +57,28 @@ export function ClientModal({ onClose }: ClientModalProps) {
         {clients.length === 0 && <p className="text-sm text-slate-400">{t.clientEmpty}</p>}
         {clients.map((client) => (
           <div key={client.id} className="flex items-center gap-2">
+            <label
+              aria-label={t.clientLogoAria}
+              className="flex size-8 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-slate-100 text-slate-400 hover:opacity-80 dark:bg-slate-800"
+            >
+              {client.logo ? (
+                <img src={client.logo} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <Building2 size={16} />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  handleLogoChange(client.id, e.target.files);
+                  e.target.value = '';
+                }}
+              />
+            </label>
             <input
               value={client.name}
-              onChange={(e) => updateClient(client.id, e.target.value)}
+              onChange={(e) => updateClient(client.id, { name: e.target.value })}
               className="flex-1 rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#12141a]"
             />
             <button

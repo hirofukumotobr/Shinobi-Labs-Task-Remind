@@ -116,6 +116,7 @@ export interface Translations {
   clientRemove: string;
   clientNamePlaceholder: string;
   clientConfirmRemove: (count: number) => string;
+  clientLogoAria: string;
 
   commonAdd: string;
 
@@ -354,6 +355,7 @@ export const translations: Record<'pt' | 'en', Translations> = {
     clientManage: 'Gerenciar clientes',
     clientEmpty: 'Nenhum cliente cadastrado ainda.',
     clientRemove: 'Remover cliente',
+    clientLogoAria: 'Alterar logo do cliente',
     clientNamePlaceholder: 'Nome do cliente',
     clientConfirmRemove: (count) =>
       `Este cliente tem ${count} tarefa(s). Elas ficarão sem cliente. Continuar?`,
@@ -545,6 +547,7 @@ export const translations: Record<'pt' | 'en', Translations> = {
     clientManage: 'Manage clients',
     clientEmpty: 'No clients yet.',
     clientRemove: 'Remove client',
+    clientLogoAria: 'Change client logo',
     clientNamePlaceholder: 'Client name',
     clientConfirmRemove: (count) =>
       `This client has ${count} task(s). They will become clientless. Continue?`,

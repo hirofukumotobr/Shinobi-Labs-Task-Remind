@@ -95,8 +95,8 @@ export const api = {
   deleteCategory: (id: string) => request(`/categories/${id}`, { method: 'DELETE' }),
 
   createClient: (client: Client) => request('/clients', { method: 'POST', body: JSON.stringify(client) }),
-  updateClient: (id: string, name: string) =>
-    request(`/clients/${id}`, { method: 'PUT', body: JSON.stringify({ name }) }),
+  updateClient: (id: string, changes: Partial<Pick<Client, 'name' | 'logo'>>) =>
+    request(`/clients/${id}`, { method: 'PUT', body: JSON.stringify(changes) }),
   deleteClient: (id: string) => request(`/clients/${id}`, { method: 'DELETE' }),
 
   createTask: (task: Task) => request('/tasks', { method: 'POST', body: JSON.stringify(task) }),

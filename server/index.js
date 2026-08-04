@@ -24,7 +24,7 @@ function mapUserRow(row) {
 }
 
 function mapClientRow(row) {
-  return { id: row.id, name: row.name };
+  return { id: row.id, name: row.name, logo: row.logo ?? null };
 }
 
 function mapTaskRow(row) {
@@ -268,11 +268,16 @@ app.post(
   '/clients',
   requireAuth,
   asyncHandler(async (req, res) => {
-    const { id: clientProvidedId, name } = req.body || {};
+    const { id: clientProvidedId, name, logo } = req.body || {};
     if (!name) return res.status(400).json({ error: 'invalid_input' });
     const id = clientProvidedId || crypto.randomUUID();
-    await pool.query('INSERT INTO clients (id, user_id, name) VALUES (?, ?, ?)', [id, req.userId, name]);
-    res.json({ id, name });
+    await pool.query('INSERT INTO clients (id, user_id, name, logo) VALUES (?, ?, ?, ?)', [
+      id,
+      req.userId,
+      name,
+      logo ?? null,
+    ]);
+    res.json({ id, name, logo: logo ?? null });
   }),
 );
 
@@ -280,8 +285,24 @@ app.put(
   '/clients/:id',
   requireAuth,
   asyncHandler(async (req, res) => {
-    const { name } = req.body || {};
-    await pool.query('UPDATE clients SET name = ? WHERE id = ? AND user_id = ?', [name, req.params.id, req.userId]);
+    const { name, logo } = req.body || {};
+    const fields = [];
+    const values = [];
+
+    const setIfDefined = (column, value, transform = (v) => v) => {
+      if (value !== undefined) {
+        fields.push(`${column} = ?`);
+        values.push(transform(value));
+      }
+    };
+
+    setIfDefined('name', name);
+    setIfDefined('logo', logo);
+
+    if (fields.length === 0) return res.json({ ok: true });
+
+    values.push(req.params.id, req.userId);
+    await pool.query(`UPDATE clients SET ${fields.join(', ')} WHERE id = ? AND user_id = ?`, values);
     res.json({ ok: true });
   }),
 );
@@ -396,7 +417,12 @@ app.post(
     for (const client of clients) {
       const id = crypto.randomUUID();
       clientIdMap.set(client.id, id);
-      await pool.query('INSERT INTO clients (id, user_id, name) VALUES (?, ?, ?)', [id, userId, client.name]);
+      await pool.query('INSERT INTO clients (id, user_id, name, logo) VALUES (?, ?, ?, ?)', [
+        id,
+        userId,
+        client.name,
+        client.logo ?? null,
+      ]);
     }
 
     for (const task of tasks) {
@@ -468,6 +494,7 @@ async function runMigrations() {
   await ensureColumn('categories', 'position', 'INT NOT NULL DEFAULT 0');
   await ensureColumn('tasks', 'due_time', 'VARCHAR(5)');
   await ensureColumn('tasks', 'due_time_label', 'VARCHAR(255)');
+  await ensureColumn('clients', 'logo', 'MEDIUMTEXT');
 
   const hadClientIds = await columnExists('tasks', 'client_ids');
   await ensureColumn('tasks', 'client_ids', 'JSON');
