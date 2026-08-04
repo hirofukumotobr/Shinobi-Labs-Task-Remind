@@ -222,11 +222,20 @@ app.post(
     const { id: clientProvidedId, name, color } = req.body || {};
     if (!name || !color) return res.status(400).json({ error: 'invalid_input' });
     const id = clientProvidedId || crypto.randomUUID();
-    await pool.query(
-      `INSERT INTO categories (id, user_id, name, color, position)
-       VALUES (?, ?, ?, ?, (SELECT COALESCE(MAX(position), -1) + 1 FROM categories WHERE user_id = ?))`,
-      [id, req.userId, name, color, req.userId],
+    // MySQL rejects a subquery that reads from the same table an INSERT
+    // targets ("You can't specify target table ... for update in FROM
+    // clause"), so the next position has to be resolved as a separate query.
+    const [[{ nextPosition }]] = await pool.query(
+      'SELECT COALESCE(MAX(position), -1) + 1 AS nextPosition FROM categories WHERE user_id = ?',
+      [req.userId],
     );
+    await pool.query('INSERT INTO categories (id, user_id, name, color, position) VALUES (?, ?, ?, ?, ?)', [
+      id,
+      req.userId,
+      name,
+      color,
+      nextPosition,
+    ]);
     res.json({ id, name, color });
   }),
 );
