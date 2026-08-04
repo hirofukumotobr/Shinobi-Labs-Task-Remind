@@ -47,7 +47,7 @@ export function TaskCard({ task, categories, clients, onEdit }: TaskCardProps) {
             onChange={() => toggleTaskCompleted(task.id)}
             className="mt-1 size-4 shrink-0 accent-blue-600"
           />
-          <span className={`font-medium ${task.completed ? 'line-through text-slate-400' : ''}`}>
+          <span className={`text-lg font-medium ${task.completed ? 'line-through text-slate-400' : ''}`}>
             {task.title}
           </span>
         </label>
@@ -62,7 +62,7 @@ export function TaskCard({ task, categories, clients, onEdit }: TaskCardProps) {
 
       {task.notes && <p className="text-sm text-slate-500 dark:text-slate-400">{task.notes}</p>}
 
-      <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs">
+      <div className="mt-1 flex flex-wrap items-center gap-1.5 text-sm">
         {categories.map((category) => (
           <span
             key={category.id}
@@ -70,19 +70,6 @@ export function TaskCard({ task, categories, clients, onEdit }: TaskCardProps) {
             style={{ backgroundColor: category.color }}
           >
             {category.name}
-          </span>
-        ))}
-        {clients.map((client) => (
-          <span
-            key={client.id}
-            className="flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-          >
-            {client.logo ? (
-              <img src={client.logo} alt="" className="size-3 shrink-0 rounded-full object-cover" />
-            ) : (
-              <User size={12} />
-            )}
-            {client.name}
           </span>
         ))}
         {task.recurrence !== 'none' && (
@@ -98,6 +85,24 @@ export function TaskCard({ task, categories, clients, onEdit }: TaskCardProps) {
           </span>
         )}
       </div>
+
+      {clients.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 text-sm">
+          {clients.map((client) => (
+            <span
+              key={client.id}
+              className="flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+            >
+              {client.logo ? (
+                <img src={client.logo} alt="" className="size-3 shrink-0 rounded-full object-cover" />
+              ) : (
+                <User size={12} />
+              )}
+              {client.name}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="mt-auto flex items-center justify-between pt-2">
         <div>
